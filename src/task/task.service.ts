@@ -10,13 +10,21 @@ export class TaskService {
     return await this.prisma.task.findMany();
   }
 
-  async getTaskById(id: number): Promise<Task> {
+  async getTaskById(id: string): Promise<Task> {
     return await this.prisma.task.findUnique({ where: { id } });
   }
 
   async createTask(task: Task | Omit<Task, 'id'>): Promise<Task> {
     return await this.prisma.task.create({
-      data: task,
+      data: {
+        id: randomUUID(),
+        title: task.title,
+        description: task.description,
+        status: task.status,
+        userId: task.userId,
+        image: task.image,
+        dueDate: task.dueDate,
+      },
     });
   }
 
@@ -27,7 +35,7 @@ export class TaskService {
     });
   }
 
-  async finishTask(id: number) {
+  async finishTask(id: string) {
     return await this.prisma.task.update({
       where: { id },
       data: {
@@ -36,7 +44,7 @@ export class TaskService {
     });
   }
 
-  async deleteTask(id: number): Promise<Task> {
+  async deleteTask(id: string): Promise<Task> {
     return await this.prisma.task.delete({ where: { id } });
   }
 }

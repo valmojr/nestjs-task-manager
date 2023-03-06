@@ -4,6 +4,7 @@ import { SlashCommand, Context, SlashCommandContext, Options } from 'necord';
 import { PrismaService } from 'src/Database/Prisma.service';
 import { StatusAutoCompleteInterceptor } from '../util/status.interceptor.service';
 import { CreateTaskDTO } from './CreateTask.dto';
+import { randomUUID } from 'crypto';
 
 @Injectable()
 export class CreateTaskCommand {
@@ -19,8 +20,7 @@ export class CreateTaskCommand {
 
     if (data.description) data.description = 'Description not provided';
     if (data.status === null) data.status = 'pending';
-    if (data.userId === null) data.userId = null;
-    if (data.image === null) data.image = null;
+    if (data.userId === null) data.userId = 'not assigned';
 
     const createdTask = {
       title: data.title,
@@ -39,12 +39,17 @@ export class CreateTaskCommand {
       );
     }
 
-    return this.prismaService.task.create({ data: createdTask });
+    return await this.prismaService.task.create({
+      data: {
+        id: randomUUID(),
+        ...createdTask,
+      },
+    });
   }
 
   @UseInterceptors(StatusAutoCompleteInterceptor)
   @SlashCommand({
-    name: 'create-task-command',
+    name: 'create-task',
     description: 'Create a task!',
     guilds: [process.env.DISCORD_DEV_GUILD_ID],
   })
@@ -52,7 +57,13 @@ export class CreateTaskCommand {
     @Context() [interaction]: SlashCommandContext,
     @Options() task: CreateTaskDTO,
   ) {
-    await this.taskCreatorHandler(task, interaction.user.username);
+    await this.taskCreatorHandler(
+      {
+        ...task,
+        goalId: null,
+      },
+      interaction.user.username,
+    );
 
     return await interaction.reply({
       content: `Task created!`,

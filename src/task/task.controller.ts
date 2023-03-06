@@ -19,7 +19,7 @@ export class TaskController {
   }
 
   @Get(':id')
-  async getUserById(@Param('id') id: number): Promise<Task> {
+  async getUserById(@Param('id') id: string): Promise<Task> {
     return this.taskService.getTaskById(id);
   }
 
@@ -34,7 +34,7 @@ export class TaskController {
   }
 
   @Delete(':id')
-  async deleteUser(@Param('id') id: number): Promise<Task> {
+  async deleteUser(@Param('id') id: string): Promise<Task> {
     return this.taskService.deleteTask(id);
   }
 }

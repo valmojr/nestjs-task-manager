@@ -15,13 +15,6 @@ enum STATUS {
   cancelled
 }
 
-model User {
-  id     String @id
-  name   String
-  avatar String
-  tasks  Task[]
-}
-
 model Goal {
   id          String    @id
   title       String
@@ -41,9 +34,13 @@ model Task {
   image       String?
   userId      String?
   goalId      String?
-  groupId     String?
-  status      STATUS    @default(pending)
+  status      STATUS
   dueDate     DateTime?
-  user        User?     @relation(fields: [userId], references: [id])
   goal        Goal?     @relation(fields: [goalId], references: [id])
+}
+
+model User {
+  id     String @id
+  name   String
+  avatar String
 }
