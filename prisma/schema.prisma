@@ -7,27 +7,12 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Goal {
-  id String @id @default(uuid())
-  title String
-  description String
-  image String?
-  status Int?
-  dueDate DateTime?
-  tasks Task[]
-}
-
-model Task {
-  id          String       @id @default(uuid())
-  title       String
-  description String
-  image       String?
-  userId      String?
-  goalId      String?
-  status      STATUS    @default(pending)
-  dueDate     DateTime?
-  user        User?     @relation(fields: [userId], references: [id])
-  goal        Goal?     @relation(fields: [goalId], references: [id])
+enum STATUS {
+  not_assigned
+  pending
+  done
+  stuck
+  cancelled
 }
 
 model User {
@@ -37,10 +22,28 @@ model User {
   tasks  Task[]
 }
 
-enum STATUS {
-  not_assigned
-  pending
-  done
-  stuck
-  cancelled
+model Goal {
+  id          String    @id
+  title       String
+  description String
+  image       String?
+  status      Int?
+  dueDate     DateTime?
+  tasks       Task[]
+  goalId      String?
+  assingedTo  String
+}
+
+model Task {
+  id          String    @id
+  title       String
+  description String
+  image       String?
+  userId      String?
+  goalId      String?
+  groupId     String?
+  status      STATUS    @default(pending)
+  dueDate     DateTime?
+  user        User?     @relation(fields: [userId], references: [id])
+  goal        Goal?     @relation(fields: [goalId], references: [id])
 }
