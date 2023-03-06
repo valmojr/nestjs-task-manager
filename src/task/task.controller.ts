@@ -6,13 +6,10 @@ import {
   Patch,
   Param,
   Delete,
-  UseGuards,
 } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
 import { Task } from '@prisma/client';
 import { TaskService } from './task.service';
 @Controller('task')
-@UseGuards(AuthGuard('discord'))
 export class TaskController {
   constructor(private readonly taskService: TaskService) {}
 
@@ -27,21 +24,13 @@ export class TaskController {
   }
 
   @Post()
-  async createUser(@Body() data: Task): Promise<Task> {
-    return this.taskService.createTask(
-      data.title,
-      data.description,
-      data.status,
-    );
+  async createUser(@Body() data: Task | Omit<Task, 'id'>): Promise<Task> {
+    return this.taskService.createTask(data);
   }
 
   @Patch()
   async updateUser(@Body() data: Task): Promise<Task> {
-    return this.taskService.createTask(
-      data.title,
-      data.description,
-      data.status,
-    );
+    return this.taskService.updateTask(data);
   }
 
   @Delete(':id')

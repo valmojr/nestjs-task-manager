@@ -1,5 +1,5 @@
 import { Injectable, Logger, UseInterceptors } from '@nestjs/common';
-import { Task } from '@prisma/client';
+import { Task } from '.prisma/client';
 import { SlashCommand, Context, SlashCommandContext, Options } from 'necord';
 import { PrismaService } from 'src/Database/Prisma.service';
 import { StatusAutoCompleteInterceptor } from '../util/status.interceptor.service';
@@ -12,24 +12,23 @@ export class CreateTaskCommand {
   }
 
   private async taskCreatorHandler(
-    data: Task,
+    data: Task | Omit<Task, 'id'>,
     whoCreated: string,
   ): Promise<Task> {
     const logger = new Logger(CreateTaskCommand.name);
 
-    const randomNumber: number = Math.floor(Math.random() * 1000000000);
+    if (data.description) data.description = 'Description not provided';
+    if (data.status === null) data.status = 'pending';
+    if (data.userId === null) data.userId = null;
+    if (data.image === null) data.image = null;
 
-    if (data.status === undefined) data.status = 'pending';
-    if (data.userId === undefined) data.userId = null;
-    if (data.image === undefined) data.image = null;
-
-    const createdTask: Task = {
-      id: randomNumber,
+    const createdTask = {
       title: data.title,
       description: data.description,
       status: data.status,
       userId: data.userId,
       image: data.image,
+      dueDate: data.dueDate,
     };
 
     if (data.userId !== undefined) {
@@ -53,17 +52,7 @@ export class CreateTaskCommand {
     @Context() [interaction]: SlashCommandContext,
     @Options() task: CreateTaskDTO,
   ) {
-    await this.taskCreatorHandler(
-      {
-        id: null,
-        title: task.title,
-        description: task.description,
-        status: task.status,
-        userId: task.userId,
-        image: task.image,
-      },
-      interaction.user.username,
-    );
+    await this.taskCreatorHandler(task, interaction.user.username);
 
     return await interaction.reply({
       content: `Task created!`,

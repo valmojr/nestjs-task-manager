@@ -6,13 +6,10 @@ import {
   Patch,
   Param,
   Delete,
-  UseGuards,
 } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
 import { User } from '@prisma/client';
 import { UserService } from './user.service';
 @Controller('user')
-@UseGuards(AuthGuard('discord'))
 export class UserController {
   constructor(private readonly userService: UserService) {}
 

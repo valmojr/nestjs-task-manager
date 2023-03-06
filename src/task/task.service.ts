@@ -1,58 +1,34 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/Database/Prisma.service';
-import { STATUS, Task } from '.prisma/client';
+import { Task } from '.prisma/client';
+import { randomUUID } from 'crypto';
 @Injectable()
 export class TaskService {
   private prisma: PrismaService;
 
-  public async getAllTasks(): Promise<Task[]> {
-    return this.prisma.task.findMany();
+  async getAllTasks(): Promise<Task[]> {
+    return await this.prisma.task.findMany();
   }
 
-  public async getTaskById(id: number): Promise<Task> {
-    return this.prisma.task.findUnique({ where: { id } });
+  async getTaskById(id: number): Promise<Task> {
+    return await this.prisma.task.findUnique({ where: { id } });
   }
 
-  public async createTask(
-    title: string,
-    description: string,
-    status?: STATUS,
-    userId?: string,
-    image?: string,
-  ): Promise<Task> {
-    return this.prisma.task.create({
-      data: {
-        title,
-        description,
-        status,
-        userId,
-        image,
-      },
+  async createTask(task: Task | Omit<Task, 'id'>): Promise<Task> {
+    return await this.prisma.task.create({
+      data: task,
     });
   }
 
-  public async updateTask(
-    id: number,
-    title: string,
-    description: string,
-    status?: STATUS,
-    userId?: string,
-    image?: string,
-  ): Promise<Task> {
-    return this.prisma.task.update({
-      where: { id },
-      data: {
-        title,
-        description,
-        status,
-        userId,
-        image,
-      },
+  async updateTask(task: Task): Promise<Task> {
+    return await this.prisma.task.update({
+      where: { id: task.id },
+      data: task,
     });
   }
 
-  public async finishTask(id: number) {
-    return this.prisma.task.update({
+  async finishTask(id: number) {
+    return await this.prisma.task.update({
       where: { id },
       data: {
         status: 'done',
@@ -60,7 +36,7 @@ export class TaskService {
     });
   }
 
-  public async deleteTask(id: number): Promise<Task> {
-    return this.prisma.task.delete({ where: { id } });
+  async deleteTask(id: number): Promise<Task> {
+    return await this.prisma.task.delete({ where: { id } });
   }
 }

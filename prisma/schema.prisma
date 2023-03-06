@@ -7,27 +7,27 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Goal {
+  id String @id @default(uuid())
+  title String
+  description String
+  image String?
+  status Int?
+  dueDate DateTime?
+  tasks Task[]
+}
+
 model Task {
-  id          Int       @id @default(autoincrement())
+  id          String       @id @default(uuid())
   title       String
   description String
   image       String?
   userId      String?
+  goalId      String?
   status      STATUS    @default(pending)
   dueDate     DateTime?
   user        User?     @relation(fields: [userId], references: [id])
-  SubTask     SubTask[]
-}
-
-model SubTask {
-  id          Int     @id @default(autoincrement())
-  title       String
-  description String
-  image       String?
-  dueDate     DateTime?
-  taskId      Int
-  status      STATUS  @default(pending)
-  task        Task    @relation(fields: [taskId], references: [id])
+  goal        Goal?     @relation(fields: [goalId], references: [id])
 }
 
 model User {

@@ -1,6 +1,5 @@
 import { STATUS } from '@prisma/client';
-import { StringOption, MemberOption } from 'necord';
-
+import { MemberOption, StringOption } from 'necord';
 export class CreateTaskDTO {
   @StringOption({
     name: 'title',
@@ -30,6 +29,13 @@ export class CreateTaskDTO {
     required: false,
   })
   status: STATUS;
+
+  @StringOption({
+    name: 'due-date',
+    description: 'The due date of the task, use any format',
+    required: false,
+  })
+  dueDate: Date;
 
   @StringOption({
     name: 'image',

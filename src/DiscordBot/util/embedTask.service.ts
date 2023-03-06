@@ -5,7 +5,7 @@ import { StatusColorPicker } from './statuscolors.service';
 
 @Injectable()
 export class EmbedTaskService {
-  public createTaskEmbed(task: Task): EmbedBuilder {
+  public static createTaskEmbed(task: Task): EmbedBuilder {
     const embed = new EmbedBuilder();
 
     embed.setTitle(task.title);
@@ -24,7 +24,7 @@ export class EmbedTaskService {
     if (task.dueDate)
       embed.addFields({
         name: 'Due Date',
-        value: task.dueDate,
+        value: task.dueDate.toString(),
       });
 
     return embed;
