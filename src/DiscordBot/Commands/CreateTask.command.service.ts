@@ -1,39 +1,49 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger, UseInterceptors } from '@nestjs/common';
 import { Task } from '@prisma/client';
 import { SlashCommand, Context, SlashCommandContext, Options } from 'necord';
-import { TaskService } from 'src/task/task.service';
+import { PrismaService } from 'src/Database/Prisma.service';
+import { StatusAutoCompleteInterceptor } from '../util/status.interceptor.service';
 import { CreateTaskDTO } from './CreateTask.dto';
 
 @Injectable()
 export class CreateTaskCommand {
-  taskHandler: TaskService;
+  constructor(private prismaService: PrismaService) {
+    this.prismaService = prismaService;
+  }
 
-  private taskCreatorHandler(
-    taskTitle: string,
-    taskDescription: string,
-    taskStatus?: string,
-    taskAssignee?: string,
-    taskImage?: string,
-  ): Task {
+  private async taskCreatorHandler(
+    data: Task,
+    whoCreated: string,
+  ): Promise<Task> {
+    const logger = new Logger(CreateTaskCommand.name);
+
     const randomNumber: number = Math.floor(Math.random() * 1000000000);
 
-    if (taskStatus === undefined) taskStatus = 'pendent';
-    if (taskAssignee === undefined) taskAssignee = null;
-    if (taskImage === undefined) taskImage = null;
+    if (data.status === undefined) data.status = 'pending';
+    if (data.userId === undefined) data.userId = null;
+    if (data.image === undefined) data.image = null;
 
-    const createdTask = {
+    const createdTask: Task = {
       id: randomNumber,
-      title: taskTitle,
-      description: taskDescription,
-      status: taskStatus,
-      userId: taskAssignee,
-      image: taskImage,
+      title: data.title,
+      description: data.description,
+      status: data.status,
+      userId: data.userId,
+      image: data.image,
     };
 
-    this.taskHandler.createTaskByTaskObject(createdTask);
+    if (data.userId !== undefined) {
+      logger.log(`Task ${data.title} created by ${whoCreated}!`);
+    } else {
+      logger.log(
+        `Task ${data.title} created by ${whoCreated} and assigned to ${data.userId}!`,
+      );
+    }
 
-    return createdTask;
+    return this.prismaService.task.create({ data: createdTask });
   }
+
+  @UseInterceptors(StatusAutoCompleteInterceptor)
   @SlashCommand({
     name: 'create-task-command',
     description: 'Create a task!',
@@ -43,18 +53,20 @@ export class CreateTaskCommand {
     @Context() [interaction]: SlashCommandContext,
     @Options() task: CreateTaskDTO,
   ) {
-    return interaction.reply({ content: `Task ${task.title} here` });
-  }
+    await this.taskCreatorHandler(
+      {
+        id: null,
+        title: task.title,
+        description: task.description,
+        status: task.status,
+        userId: task.userId,
+        image: task.image,
+      },
+      interaction.user.username,
+    );
 
-  @SlashCommand({
-    name: 'create-task',
-    description: 'Create a task!',
-    guilds: [process.env.DISCORD_DEV_GUILD_ID],
-  })
-  public async onModalTaskCreation(
-    @Context() [interaction]: SlashCommandContext,
-    @Options() task: CreateTaskDTO,
-  ) {
-    return interaction.reply({ content: `Task ${task.title} here` });
+    return await interaction.reply({
+      content: `Task created!`,
+    });
   }
 }

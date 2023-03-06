@@ -8,24 +8,39 @@ datasource db {
 }
 
 model Task {
-  id          Int     @id @default(autoincrement())
+  id          Int       @id @default(autoincrement())
   title       String
   description String
   image       String?
   userId      String?
+  status      STATUS    @default(pending)
+  dueDate     DateTime?
+  user        User?     @relation(fields: [userId], references: [id])
+  SubTask     SubTask[]
+}
+
+model SubTask {
+  id          Int     @id @default(autoincrement())
+  title       String
+  description String
+  image       String?
+  dueDate     DateTime?
+  taskId      Int
   status      STATUS  @default(pending)
-  user        User?   @relation(fields: [userId], references: [id])
+  task        Task    @relation(fields: [taskId], references: [id])
 }
 
 model User {
-  id     String  @id
+  id     String @id
   name   String
   avatar String
   tasks  Task[]
 }
 
 enum STATUS {
+  not_assigned
   pending
   done
   stuck
+  cancelled
 }

@@ -1,4 +1,5 @@
-import { MemberOption, StringOption } from 'necord';
+import { STATUS } from '@prisma/client';
+import { StringOption, MemberOption } from 'necord';
 
 export class CreateTaskDTO {
   @StringOption({
@@ -20,14 +21,15 @@ export class CreateTaskDTO {
     description: 'The assignee of the task',
     required: false,
   })
-  assignee: string;
+  userId: string;
 
   @StringOption({
     name: 'status',
     description: 'The status of the task',
+    autocomplete: true,
     required: false,
   })
-  status: string;
+  status: STATUS;
 
   @StringOption({
     name: 'image',

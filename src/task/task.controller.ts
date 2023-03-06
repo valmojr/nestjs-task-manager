@@ -29,7 +29,6 @@ export class TaskController {
   @Post()
   async createUser(@Body() data: Task): Promise<Task> {
     return this.taskService.createTask(
-      data.id,
       data.title,
       data.description,
       data.status,
@@ -39,7 +38,6 @@ export class TaskController {
   @Patch()
   async updateUser(@Body() data: Task): Promise<Task> {
     return this.taskService.createTask(
-      data.id,
       data.title,
       data.description,
       data.status,

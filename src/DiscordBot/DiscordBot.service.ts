@@ -18,4 +18,9 @@ export class DiscordBotService {
   public onWarn(@Context() [message]: ContextOf<'warn'>) {
     this.logger.warn(message);
   }
+
+  @On('error')
+  public onError(@Context() [error]: ContextOf<'error'>) {
+    this.logger.error(error.message.toString());
+  }
 }
