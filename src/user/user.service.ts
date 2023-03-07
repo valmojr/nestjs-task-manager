@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/Database/Prisma.service';
 import { User } from '@prisma/client';
+import { randomUUID } from 'crypto';
 @Injectable()
 export class UserService {
   constructor(private prisma: PrismaService) {}
@@ -13,28 +14,41 @@ export class UserService {
     return this.prisma.user.findUnique({ where: { id } });
   }
 
-  async createUser(id: string, name: string, avatar: string): Promise<User> {
+  async createUser(user: User): Promise<User> {
     return this.prisma.user.create({
       data: {
-        id,
-        name,
-        avatar,
+        ...user,
+        id: randomUUID(),
       },
     });
   }
 
-  async updateUser(id: string, name: string, avatar: string): Promise<User> {
+  async updateUser(user: User): Promise<User> {
+    const { id } = user;
+
     return this.prisma.user.update({
       where: { id },
-      data: {
-        id,
-        name,
-        avatar,
-      },
+      data: user,
     });
   }
 
-  async deleteUser(id: string): Promise<User> {
+  async updateUserByID(
+    id: string,
+    user: User | Omit<User, 'id'>,
+  ): Promise<User> {
+    return this.prisma.user.update({
+      where: { id },
+      data: user,
+    });
+  }
+
+  async deleteUserById(id: string): Promise<User> {
+    return this.prisma.user.delete({ where: { id } });
+  }
+
+  async deleteUserByObject(user: User): Promise<User> {
+    const { id } = user;
+
     return this.prisma.user.delete({ where: { id } });
   }
 }
