@@ -29,6 +29,7 @@
     "discord.js": "^14.7.1",
     "dotenv": "^16.0.3",
     "necord": "^5.4.8",
+    "path-to-regexp": "^6.2.1",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.2.0"
   },

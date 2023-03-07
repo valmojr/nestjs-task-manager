@@ -18,12 +18,7 @@ export class TaskService {
     return await this.prisma.task.create({
       data: {
         id: randomUUID(),
-        title: task.title,
-        description: task.description,
-        status: task.status,
-        userId: task.userId,
-        image: task.image,
-        dueDate: task.dueDate,
+        ...task,
       },
     });
   }
@@ -35,7 +30,7 @@ export class TaskService {
     });
   }
 
-  async finishTask(id: string) {
+  async finishTask(id: string): Promise<Task> {
     return await this.prisma.task.update({
       where: { id },
       data: {

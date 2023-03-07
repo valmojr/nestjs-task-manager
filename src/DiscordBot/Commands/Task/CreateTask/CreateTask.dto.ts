@@ -25,8 +25,14 @@ export class CreateTaskDTO {
   @StringOption({
     name: 'status',
     description: 'The status of the task',
-    autocomplete: true,
     required: false,
+    choices: [
+      { name: 'Not Assigned', value: 'not_assigned' },
+      { name: 'Pending', value: 'pending' },
+      { name: 'Done', value: 'done' },
+      { name: 'Cancelled', value: 'cancelled' },
+      { name: 'Stuck', value: 'stuck' },
+    ],
   })
   status: STATUS;
 
@@ -43,4 +49,11 @@ export class CreateTaskDTO {
     required: false,
   })
   image: string;
+
+  @StringOption({
+    name: 'goal',
+    description: 'The goal id of the task',
+    required: false,
+  })
+  goalId: string;
 }
