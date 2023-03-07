@@ -20,8 +20,8 @@ export class TaskController {
   }
 
   @Get()
-  findAll(): Promise<Task[]> {
-    return this.taskService.findAll();
+  async findAll() {
+    return await this.taskService.findAll();
   }
 
   @Get(':id')
