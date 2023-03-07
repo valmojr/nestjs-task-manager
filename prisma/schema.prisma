@@ -15,32 +15,52 @@ enum STATUS {
   cancelled
 }
 
-model Goal {
-  id          String    @id
-  title       String
-  description String
-  image       String?
-  status      Int?
-  dueDate     DateTime?
-  tasks       Task[]
-  goalId      String?
-  assingedTo  String
+model User {
+  id           String         @id
+  name         String
+  avatar       String
+  UsersOnTasks UsersOnTasks[]
+  UsersOnGoals UsersOnGoals[]
 }
 
 model Task {
-  id          String    @id
-  title       String
-  description String
-  image       String?
-  userId      String?
-  goalId      String?
-  status      STATUS
-  dueDate     DateTime?
-  goal        Goal?     @relation(fields: [goalId], references: [id])
+  id           String         @id
+  title        String
+  description  String
+  image        String?
+  userId       String?
+  goalId       String?
+  status       STATUS
+  dueDate      DateTime?
+  UsersOnTasks UsersOnTasks[]
 }
 
-model User {
-  id     String @id
-  name   String
-  avatar String
+model UsersOnTasks {
+  task       Task     @relation(fields: [taskId], references: [id])
+  taskId     String
+  user       User     @relation(fields: [userId], references: [id])
+  userId     String
+  assignedAt DateTime @default(now())
+
+  @@id([taskId, userId])
+}
+
+model Goal {
+  id           String         @id
+  title        String
+  description  String
+  image        String?
+  status       Int?
+  dueDate      DateTime?
+  UsersOnGoals UsersOnGoals[]
+}
+
+model UsersOnGoals {
+  goal       Goal     @relation(fields: [goalId], references: [id])
+  goalId     String
+  user       User     @relation(fields: [userId], references: [id])
+  userId     String
+  assignedAt DateTime @default(now())
+
+  @@id([goalId, userId])
 }
