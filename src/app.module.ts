@@ -6,6 +6,7 @@ import { DiscordBotCommandsModule } from './DiscordBot/Commands/Commands.module'
 import { DiscordBotService } from './DiscordBot/DiscordBot.service';
 import { TaskModule } from './Task/Task.module';
 import { UserModule } from './User/User.module';
+import { GoalModule } from './goal/goal.module';
 @Module({
   imports: [
     NecordModule.forRoot({
@@ -17,6 +18,7 @@ import { UserModule } from './User/User.module';
     DiscordBotCommandsModule,
     TaskModule,
     UserModule,
+    GoalModule,
   ],
   controllers: [],
   providers: [PrismaService, DiscordBotService],

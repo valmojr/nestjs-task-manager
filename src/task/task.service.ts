@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Task } from '@prisma/client';
+import { Task } from '.prisma/client';
 import { randomUUID } from 'crypto';
 import { PrismaService } from 'src/Database/Prisma.service';
 

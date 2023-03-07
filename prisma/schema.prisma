@@ -26,14 +26,14 @@ model User {
 model Task {
   id          String    @id
   title       String
-  description String
+  description String?
   image       String?
-  user        User      @relation(fields: [userId], references: [id])
+  user        User?     @relation(fields: [userId], references: [id])
   goalId      String?
   status      STATUS
   dueDate     DateTime?
   goal        Goal?     @relation(fields: [goalId], references: [id])
-  userId      String
+  userId      String?
 }
 
 model Goal {

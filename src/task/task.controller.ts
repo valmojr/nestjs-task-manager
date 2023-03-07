@@ -7,7 +7,7 @@ import {
   Param,
   Delete,
 } from '@nestjs/common';
-import { Task } from '@prisma/client';
+import { Task } from '.prisma/client';
 import { TaskService } from './task.service';
 
 @Controller('task')

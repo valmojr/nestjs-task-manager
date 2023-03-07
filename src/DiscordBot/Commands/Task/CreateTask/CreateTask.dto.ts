@@ -1,4 +1,4 @@
-import { STATUS } from '@prisma/client';
+import { STATUS } from '.prisma/client';
 import { MemberOption, StringOption } from 'necord';
 export class CreateTaskDTO {
   @StringOption({
