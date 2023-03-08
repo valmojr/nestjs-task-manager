@@ -7,7 +7,8 @@ import {
   Param,
   Delete,
 } from '@nestjs/common';
-import { Task } from '.prisma/client';
+import { Task } from '@prisma/client';
+import { TaskInput } from './entity/Task.entity';
 import { TaskService } from './task.service';
 
 @Controller('task')
@@ -15,7 +16,7 @@ export class TaskController {
   constructor(private readonly taskService: TaskService) {}
 
   @Post()
-  create(@Body() task: Task): Promise<Task> {
+  create(@Body() task: TaskInput): Promise<Task> {
     return this.taskService.create(task);
   }
 
@@ -40,12 +41,12 @@ export class TaskController {
   }
 
   @Patch()
-  update(@Body() task: Task): Promise<Task> {
+  update(@Body() task: TaskInput): Promise<Task> {
     return this.taskService.update(task);
   }
 
   @Patch(':id')
-  updateById(@Param('id') id: string, @Body() task: Task): Promise<Task> {
+  updateById(@Param('id') id: string, @Body() task: TaskInput): Promise<Task> {
     return this.taskService.updateById(id, task);
   }
 

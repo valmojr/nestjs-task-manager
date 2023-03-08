@@ -7,7 +7,7 @@ import {
   Param,
   Delete,
 } from '@nestjs/common';
-import { Goal } from '.prisma/client';
+import { Goal } from '@prisma/client';
 import { GoalService } from './goal.service';
 
 @Controller('goal')

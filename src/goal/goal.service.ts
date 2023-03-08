@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { Goal } from '.prisma/client';
+import { Goal } from '@prisma/client';
 import { PrismaService } from 'src/Database/Prisma.service';
 import { randomUUID } from 'crypto';
 
 @Injectable()
 export class GoalService {
-  private prisma: PrismaService;
+  constructor(private readonly prisma: PrismaService) {}
 
   async create(goal: Goal) {
     return await this.prisma.goal.create({

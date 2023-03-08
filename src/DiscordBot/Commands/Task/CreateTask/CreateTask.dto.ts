@@ -1,6 +1,11 @@
-import { STATUS } from '.prisma/client';
-import { MemberOption, StringOption } from 'necord';
+import { IsNotEmpty } from 'class-validator';
+import {
+  MemberOption,
+  StringOption,
+} from 'necord/dist/commands/slash-commands/options';
+
 export class CreateTaskDTO {
+  @IsNotEmpty()
   @StringOption({
     name: 'title',
     description: 'The title of the task',
@@ -26,15 +31,8 @@ export class CreateTaskDTO {
     name: 'status',
     description: 'The status of the task',
     required: false,
-    choices: [
-      { name: 'Not Assigned', value: 'not_assigned' },
-      { name: 'Pending', value: 'pending' },
-      { name: 'Done', value: 'done' },
-      { name: 'Cancelled', value: 'cancelled' },
-      { name: 'Stuck', value: 'stuck' },
-    ],
   })
-  status: STATUS;
+  status: 'not_assigned' | 'pending' | 'completed' | 'stuck' | 'on_hold';
 
   @StringOption({
     name: 'due-date',

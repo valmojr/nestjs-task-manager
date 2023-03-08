@@ -16,6 +16,7 @@ export class CreateTaskCommand extends CreateTaskHandler {
   @SlashCommand({
     name: 'create-task',
     description: 'Create Task Popup',
+    guilds: [process.env.DISCORD_DEV_GUILD_ID],
   })
   public async createTaskModal(@Context() [interaction]: SlashCommandContext) {
     return interaction.showModal(

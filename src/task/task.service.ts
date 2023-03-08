@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
-import { Task } from '.prisma/client';
+import { Task } from '@prisma/client';
 import { randomUUID } from 'crypto';
 import { PrismaService } from 'src/Database/Prisma.service';
-
+import { TaskInput } from './entity/Task.entity';
 @Injectable()
 export class TaskService {
-  private prisma: PrismaService;
+  constructor(private readonly prisma: PrismaService) {}
 
-  async create(task: Task): Promise<Task> {
+  async create(task: TaskInput): Promise<Task> {
     return await this.prisma.task.create({
       data: {
         ...task,
@@ -16,7 +16,7 @@ export class TaskService {
     });
   }
 
-  async findAll() {
+  async findAll(): Promise<Task[]> {
     return await this.prisma.task.findMany();
   }
 
@@ -38,14 +38,14 @@ export class TaskService {
     });
   }
 
-  async update(task: Task): Promise<Task> {
+  async update(task: TaskInput): Promise<Task> {
     return await this.prisma.task.update({
       where: { id: task.id },
       data: task,
     });
   }
 
-  async updateById(id: string, task: Task): Promise<Task> {
+  async updateById(id: string, task: TaskInput): Promise<Task> {
     return await this.prisma.task.update({
       where: { id },
       data: task,

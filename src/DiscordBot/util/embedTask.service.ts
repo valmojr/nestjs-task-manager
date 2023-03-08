@@ -1,11 +1,12 @@
-import { Task } from '.prisma/client';
+import { Task } from '@prisma/client';
 import { Injectable } from '@nestjs/common';
 import { EmbedBuilder } from 'discord.js';
 import { StatusColorPicker } from './statuscolors.service';
+import { TaskInput } from 'src/task/entity/Task.entity';
 
 @Injectable()
 export class EmbedTaskService {
-  public static createTaskEmbed(task: Task | Omit<Task, 'id'>) {
+  public static createTaskEmbed(task: Task) {
     const embed = new EmbedBuilder();
 
     embed.setTitle(task.title);

@@ -22,7 +22,7 @@ model Task {
   image       String?
   user        User?     @relation(fields: [userId], references: [id])
   goalId      String?
-  status      String
+  status      String?   @default("pending")
   dueDate     DateTime?
   goal        Goal?     @relation(fields: [goalId], references: [id])
   userId      String?
@@ -31,9 +31,9 @@ model Task {
 model Goal {
   id          String    @id
   title       String
-  description String
+  description String?
   image       String?
-  status      Int?
+  status      String?   @default("pending")
   dueDate     DateTime?
   users       User[]
   tasks       Task[]

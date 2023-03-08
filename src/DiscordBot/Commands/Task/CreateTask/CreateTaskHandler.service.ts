@@ -1,24 +1,24 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { Task } from '.prisma/client';
+import { Task } from '@prisma/client';
 import { randomUUID } from 'crypto';
 import { PrismaService } from 'src/Database/Prisma.service';
 import { EmbedTaskService } from 'src/DiscordBot/util/embedTask.service';
+import { TaskInput } from 'src/task/entity/Task.entity';
 import { CreateTaskCommand } from './CreateTask.command.service';
 
 @Injectable()
 export class CreateTaskHandler extends EmbedTaskService {
-  private prisma: PrismaService;
+  constructor(private readonly prisma: PrismaService) {
+    super();
+  }
 
-  async taskCreatorHandler(
-    data: Task | Omit<Task, 'id'>,
-    whoCreated: string,
-  ): Promise<Task> {
+  async taskCreatorHandler(data: TaskInput, whoCreated: string): Promise<Task> {
     const logger = new Logger(CreateTaskCommand.name);
     if (data.description === null)
       data.description = 'Description not provided';
     if (data.status === null) data.status = 'pending';
 
-    const createdTask: Omit<Task, 'id'> = {
+    const createdTask: TaskInput = {
       title: data.title,
       description: data.description,
       status: data.status,
