@@ -3,46 +3,38 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
-  url      = env("DATABASE_URL")
+  provider = "sqlite"
+  url      = "file:./dev.db"
 }
 
-enum status {
-  not_assigned
-  pending
-  done
-  stuck
-  cancelled
-}
-
-model user {
+model User {
   id     String @id
   name   String
   avatar String
-  tasks  task[]
-  goals  goal[]
+  tasks  Task[]
+  goals  Goal[]
 }
 
-model task {
+model Task {
   id          String    @id
   title       String
   description String?
   image       String?
-  user        user?     @relation(fields: [userId], references: [id])
+  user        User?     @relation(fields: [userId], references: [id])
   goalId      String?
-  status      status
+  status      String
   dueDate     DateTime?
-  goal        goal?     @relation(fields: [goalId], references: [id])
+  goal        Goal?     @relation(fields: [goalId], references: [id])
   userId      String?
 }
 
-model goal {
+model Goal {
   id          String    @id
   title       String
   description String
   image       String?
   status      Int?
   dueDate     DateTime?
-  users       user[]
-  tasks       task[]
+  users       User[]
+  tasks       Task[]
 }
