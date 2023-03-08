@@ -7,7 +7,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum STATUS {
+enum status {
   not_assigned
   pending
   done
@@ -15,34 +15,34 @@ enum STATUS {
   cancelled
 }
 
-model User {
+model user {
   id     String @id
   name   String
   avatar String
-  tasks  Task[]
-  goals  Goal[]
+  tasks  task[]
+  goals  goal[]
 }
 
-model Task {
+model task {
   id          String    @id
   title       String
   description String?
   image       String?
-  user        User?     @relation(fields: [userId], references: [id])
+  user        user?     @relation(fields: [userId], references: [id])
   goalId      String?
-  status      STATUS
+  status      status
   dueDate     DateTime?
-  goal        Goal?     @relation(fields: [goalId], references: [id])
+  goal        goal?     @relation(fields: [goalId], references: [id])
   userId      String?
 }
 
-model Goal {
+model goal {
   id          String    @id
   title       String
   description String
   image       String?
   status      Int?
   dueDate     DateTime?
-  users       User[]
-  tasks       Task[]
+  users       user[]
+  tasks       task[]
 }
