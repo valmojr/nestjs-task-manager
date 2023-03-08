@@ -11,7 +11,11 @@ import { GoalModule } from './goal/goal.module';
   imports: [
     NecordModule.forRoot({
       token: process.env.DISCORD_TOKEN,
-      intents: [IntentsBitField.Flags.Guilds],
+      intents: [
+        IntentsBitField.Flags.Guilds,
+        IntentsBitField.Flags.GuildMessages,
+        IntentsBitField.Flags.GuildMembers,
+      ],
       prefix: '!',
       development: [process.env.DISCORD_DEV_GUILD_ID],
     }),

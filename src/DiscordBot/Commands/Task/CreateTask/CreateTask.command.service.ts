@@ -21,7 +21,7 @@ export class CreateTaskCommand extends CreateTaskHandler {
   public async createTaskModal(@Context() [interaction]: SlashCommandContext) {
     return interaction.showModal(
       new ModalBuilder()
-        .setTitle('Task Creation')
+        .setTitle('Create Task')
         .setCustomId('taskcreationmodal')
         .setComponents([
           new ActionRowBuilder<TextInputBuilder>().addComponents([
@@ -29,6 +29,7 @@ export class CreateTaskCommand extends CreateTaskHandler {
               .setCustomId('title')
               .setLabel('Title')
               .setPlaceholder('Title')
+              .setRequired(true)
               .setStyle(TextInputStyle.Short),
           ]),
           new ActionRowBuilder<TextInputBuilder>().addComponents([
@@ -36,6 +37,7 @@ export class CreateTaskCommand extends CreateTaskHandler {
               .setCustomId('description')
               .setLabel('Description')
               .setPlaceholder('Description')
+              .setRequired(true)
               .setStyle(TextInputStyle.Paragraph),
           ]),
           new ActionRowBuilder<TextInputBuilder>().addComponents([
@@ -43,6 +45,7 @@ export class CreateTaskCommand extends CreateTaskHandler {
               .setCustomId('image')
               .setLabel('Image URL')
               .setPlaceholder('Image URL')
+              .setRequired(false)
               .setStyle(TextInputStyle.Short),
           ]),
         ]),

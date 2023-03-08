@@ -1,8 +1,8 @@
 import { MemberOption, StringOption } from 'necord';
 
-export class AssignTaskDTO {
+export class AssignTaskToUserDTO {
   @StringOption({
-    name: 'task id',
+    name: 'id',
     description: 'The id of the task',
     required: true,
   })

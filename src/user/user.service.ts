@@ -51,4 +51,18 @@ export class UserService {
 
     return this.prisma.user.delete({ where: { id } });
   }
+
+  async findOrCreateUser(user: User): Promise<User> {
+    const { id } = user;
+
+    const userExists = await this.prisma.user.findUnique({
+      where: { id },
+    });
+
+    if (userExists) userExists;
+
+    return this.prisma.user.create({
+      data: user,
+    });
+  }
 }

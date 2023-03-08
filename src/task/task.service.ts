@@ -63,4 +63,11 @@ export class TaskService {
       where: { id },
     });
   }
+
+  async assignTask(taskId: string, userId: string): Promise<Task> {
+    return await this.prisma.task.update({
+      where: { id: taskId },
+      data: { userId, status: 'pending' },
+    });
+  }
 }
