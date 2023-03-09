@@ -1,9 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { SlashCommand, Context, SlashCommandContext, Options } from 'necord';
 import { EmbedTaskService } from 'src/DiscordBot/util/embedTask.service';
 import { AssignTaskToUserDTO } from './AssignTaskToUser.dto';
 import { TaskService } from 'src/task/task.service';
 import { UserService } from 'src/User/user.service';
+import { User } from '@prisma/client';
 
 @Injectable()
 export class AssignTaskToUserCommand extends EmbedTaskService {
@@ -14,8 +15,10 @@ export class AssignTaskToUserCommand extends EmbedTaskService {
     super();
   }
 
+  private logger = new Logger(AssignTaskToUserCommand.name);
+
   @SlashCommand({
-    name: 'assign-tasks-to-user',
+    name: 'assign-task-to-user',
     description: 'Assign a task to a user',
     guilds: [process.env.DISCORD_DEV_GUILD_ID],
   })
@@ -25,19 +28,39 @@ export class AssignTaskToUserCommand extends EmbedTaskService {
   ) {
     const currentTask = await this.taskService.findById(params.taskId);
 
-    const assignedUser = await this.userService.findOrCreateUser({
-      id: interaction.guild.members.cache.get(params.userId).user.id,
-      name: interaction.guild.members.cache.get(params.userId).user.username,
-      avatar: interaction.guild.members.cache.get(params.userId).user.avatar,
+    if (!currentTask) {
+      return 'Task not found';
+    }
+
+    const fetchedUser = interaction.client.guilds
+      .resolve(process.env.DISCORD_DEV_GUILD_ID)
+      .members.resolve(params.userId).user;
+
+    const assignedUser: User = {
+      ...fetchedUser,
+      name: fetchedUser.username,
+    };
+
+    await this.userService.findOrCreateUser(assignedUser);
+
+    const assignedTask = await this.taskService.updateById(params.taskId, {
+      id: currentTask.id,
+      title: currentTask.title,
+      description: currentTask.description,
+      image: currentTask.image,
+      status: 'pending',
+      dueDate: currentTask.dueDate,
+      goalId: currentTask.goalId,
+      userId: assignedUser.id,
     });
 
+    this.logger.log(
+      `Task ${currentTask.title} assigned to ${assignedUser.name}`,
+    );
+
     return await interaction.reply({
-      content: `Task ${currentTask.title} assigned to ${assignedUser.id}`,
-      embeds: [
-        EmbedTaskService.createTaskEmbed(
-          await this.taskService.assignTask(params.taskId, params.userId),
-        ),
-      ],
+      content: `${currentTask.title} assigned to ${params.userId}`,
+      embeds: [EmbedTaskService.createTaskEmbed(assignedTask)],
     });
   }
 }

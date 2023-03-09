@@ -59,7 +59,9 @@ export class UserService {
       where: { id },
     });
 
-    if (userExists) userExists;
+    if (userExists) {
+      return userExists;
+    }
 
     return this.prisma.user.create({
       data: user,

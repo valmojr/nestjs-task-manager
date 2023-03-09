@@ -20,7 +20,7 @@ export class RegisterAllGuildMembersCommand {
     const members = interaction.guild.members.cache;
 
     members.forEach(async (member) => {
-      this.logger.log(`Registering ${member.user.username}`);
+      this.logger.log(`Find or Creating Entity for ${member.user.username}`);
 
       await this.userService.findOrCreateUser({
         id: member.user.id,

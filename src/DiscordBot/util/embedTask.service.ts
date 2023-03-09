@@ -2,7 +2,6 @@ import { Task } from '@prisma/client';
 import { Injectable } from '@nestjs/common';
 import { EmbedBuilder } from 'discord.js';
 import { StatusColorPicker } from './statuscolors.service';
-import { TaskInput } from 'src/task/entity/Task.entity';
 
 @Injectable()
 export class EmbedTaskService {
@@ -21,7 +20,7 @@ export class EmbedTaskService {
     if (task.userId)
       embed.addFields({
         name: 'Assigned to',
-        value: task.userId,
+        value: `<@${task.userId}>`,
         inline: true,
       });
     if (task.dueDate)

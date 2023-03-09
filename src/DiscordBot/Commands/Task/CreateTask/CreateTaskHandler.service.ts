@@ -32,7 +32,7 @@ export class CreateTaskHandler extends EmbedTaskService {
       logger.log(`Task ${data.title} created by ${whoCreated}!`);
     } else {
       logger.log(
-        `Task ${data.title} created by ${whoCreated} and assigned to ${data.userId}!`,
+        `${data.title} created by ${whoCreated} and assigned to ${data.userId}!`,
       );
     }
 
