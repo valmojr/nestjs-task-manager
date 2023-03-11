@@ -27,6 +27,6 @@ export class EmbedGoalCreator {
     return new EmbedBuilder()
       .setTitle(goal.title)
       .setDescription(goal.description)
-      .setColor(statusColor('Yellow'));
+      .setColor(statusColor(goal.status));
   }
 }
