@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { SlashCommand, Context, SlashCommandContext, Options } from 'necord';
-import { EmbedTaskService } from 'src/DiscordBot/util/embedTask.service';
+import { EmbedTaskService } from 'src/DiscordBot/Commands/Task/util/embedTask.service';
 import { AssignTaskToUserDTO } from './AssignTaskToUser.dto';
 import { TaskService } from 'src/task/task.service';
 import { UserService } from 'src/User/user.service';

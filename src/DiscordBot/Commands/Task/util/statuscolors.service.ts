@@ -15,6 +15,8 @@ export class StatusColorPicker {
         return 'Red';
       case 'on_hold':
         return 'Grey';
+      default:
+        return 'Grey';
     }
   }
 }

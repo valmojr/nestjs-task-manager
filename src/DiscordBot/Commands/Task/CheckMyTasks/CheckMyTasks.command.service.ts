@@ -1,33 +1,41 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
+import { EmbedBuilder } from 'discord.js';
 import { Context, SlashCommand, SlashCommandContext } from 'necord';
-import { EmbedTaskService } from 'src/DiscordBot/util/embedTask.service';
 import { TaskService } from 'src/task/task.service';
+import { StatusColorPicker } from '../util/statuscolors.service';
 
 @Injectable()
 export class CheckMyTasksCommand {
   constructor(private readonly taskService: TaskService) {}
+
+  private logger = new Logger(CheckMyTasksCommand.name);
+
   @SlashCommand({
     name: 'check-my-tasks',
     description: 'Check your tasks',
     guilds: [process.env.DISCORD_DEV_GUILD_ID],
   })
-  public async onSlashTaskCreation(
-    @Context() [interaction]: SlashCommandContext,
-  ) {
-    const myTasks = await this.taskService.findByUserId(interaction.user.id);
+  public async onSelfTaskCheck(@Context() [interaction]: SlashCommandContext) {
+    const userTasks = await this.taskService.findByUserId(interaction.user.id);
 
-    if (myTasks.length === 0) {
-      return await interaction.reply({
-        content: 'You have no tasks',
-      });
-    } else if (myTasks.length === 1) {
-      return await interaction.reply({
-        embeds: [EmbedTaskService.createTaskEmbed(myTasks[0])],
-      });
-    } else {
-      return await interaction.reply({
-        embeds: myTasks.map((task) => EmbedTaskService.createTaskEmbed(task)),
-      });
-    }
+    const userNotCompletedTasks = userTasks.filter((task) => {
+      return task.status !== 'completed';
+    });
+
+    const embedUserTasks = userNotCompletedTasks.map((task) =>
+      new EmbedBuilder()
+        .setTitle(task.title)
+        .setDescription(task.description)
+        .setColor('Yellow')
+        .setFooter({ text: `Task ID: ${task.id}` }),
+    );
+
+    this.logger.log(
+      `${interaction.user.username} just checked his ${userTasks.length} tasks`,
+    );
+
+    return await interaction.reply({
+      embeds: [...embedUserTasks],
+    });
   }
 }

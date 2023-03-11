@@ -1,6 +1,6 @@
-import { Injectable, UseInterceptors } from '@nestjs/common';
-import { AutocompleteInteraction, CommandInteraction } from 'discord.js';
-import { AutocompleteInterceptor, Ctx, Opts, SlashCommand } from 'necord';
+import { Injectable } from '@nestjs/common';
+import { AutocompleteInteraction } from 'discord.js';
+import { AutocompleteInterceptor } from 'necord';
 
 @Injectable()
 export class StatusAutoCompleteInterceptor extends AutocompleteInterceptor {

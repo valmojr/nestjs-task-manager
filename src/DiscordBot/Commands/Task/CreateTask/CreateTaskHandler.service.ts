@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { Task } from '@prisma/client';
 import { randomUUID } from 'crypto';
 import { PrismaService } from 'src/Database/Prisma.service';
-import { EmbedTaskService } from 'src/DiscordBot/util/embedTask.service';
+import { EmbedTaskService } from 'src/DiscordBot/Commands/Task/util/embedTask.service';
 import { TaskInput } from 'src/task/entity/Task.entity';
 import { CreateTaskCommand } from './CreateTask.command.service';
 

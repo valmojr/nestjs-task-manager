@@ -1,8 +1,8 @@
 import { Injectable, UseInterceptors } from '@nestjs/common';
 import { SlashCommand, Context, SlashCommandContext, Options } from 'necord';
-import { StatusAutoCompleteInterceptor } from '../../../util/status.interceptor.service';
+import { StatusAutoCompleteInterceptor } from '../util/status.interceptor.service';
 import { CreateTaskDTO } from './CreateTask.dto';
-import { EmbedTaskService } from 'src/DiscordBot/util/embedTask.service';
+import { EmbedTaskService } from 'src/DiscordBot/Commands/Task/util/embedTask.service';
 import { CreateTaskHandler } from './CreateTaskHandler.service';
 import {
   ModalBuilder,
@@ -54,7 +54,7 @@ export class CreateTaskCommand extends CreateTaskHandler {
 
   @UseInterceptors(StatusAutoCompleteInterceptor)
   @SlashCommand({
-    name: 'create-task-slash',
+    name: 'create-task-by-slash',
     description: 'Create a task by slash commands!',
     guilds: [process.env.DISCORD_DEV_GUILD_ID],
   })

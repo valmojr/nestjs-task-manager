@@ -10,6 +10,7 @@ import { AssignTaskToUserCommand } from './Task/AssignTaskToUser/AssignTaskToUse
 import { UserService } from 'src/User/user.service';
 import { GoalService } from 'src/goal/goal.service';
 import { RegisterAllGuildMembersCommand } from './User/RegisterAllGuildMembers.command.service';
+import { ListAllTasksCommand } from './Task/ListAllTasks/ListAllTasks.command';
 
 @Module({
   imports: [],
@@ -18,11 +19,12 @@ import { RegisterAllGuildMembersCommand } from './User/RegisterAllGuildMembers.c
     TaskService,
     UserService,
     GoalService,
+    PingCommand,
+    RegisterAllGuildMembersCommand,
     CreateTaskCommand,
     AssignTaskToUserCommand,
-    RegisterAllGuildMembersCommand,
     CheckMyTasksCommand,
-    PingCommand,
+    ListAllTasksCommand,
     CreateTaskHandler,
     CreateTaskModal,
   ],
