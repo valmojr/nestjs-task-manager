@@ -4,20 +4,22 @@ import { EmbedTaskService } from 'src/DiscordBot/Commands/Task/util/embedTask.se
 import { AssignTaskToGoalDTO } from './AssignTaskToGoal.dto';
 import { TaskService } from 'src/task/task.service';
 import { GoalService } from 'src/Goal/goal.service';
+import { EmbedGoalService } from '../../Goal/util/EmbedGoal.service';
 
 @Injectable()
-export class AssignTaskToGoalCommand {
+export class AssignTaskToGoalCommand extends EmbedGoalService {
   constructor(
     private readonly taskService: TaskService,
     private readonly goalService: GoalService,
-  ) {}
+  ) {
+    super();
+  }
 
   private logger = new Logger(AssignTaskToGoalCommand.name);
 
   @SlashCommand({
     name: 'assign-task-to-goal',
     description: 'Assign a task to a goal',
-    guilds: [process.env.DISCORD_DEV_GUILD_ID],
   })
   public async onSlashTaskAssign(
     @Context() [interaction]: SlashCommandContext,
@@ -61,6 +63,7 @@ export class AssignTaskToGoalCommand {
     return await interaction.reply({
       content: `${currentTask.title} assigned to ${targetGoal.title}`,
       embeds: [EmbedTaskService.createTaskEmbed(assignedTask)],
+      ephemeral: true,
     });
   }
 }

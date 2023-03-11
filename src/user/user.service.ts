@@ -61,10 +61,10 @@ export class UserService {
 
     if (userExists) {
       return userExists;
+    } else {
+      return this.prisma.user.create({
+        data: user,
+      });
     }
-
-    return this.prisma.user.create({
-      data: user,
-    });
   }
 }

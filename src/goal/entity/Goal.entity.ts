@@ -3,6 +3,6 @@ export type GoalInput = {
   title: string;
   description?: string;
   image?: string;
-  status?: string;
+  status?: number;
   dueDate?: Date;
 };

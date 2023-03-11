@@ -16,11 +16,14 @@ export class CheckMyTasksCommand {
     guilds: [process.env.DISCORD_DEV_GUILD_ID],
   })
   public async onSelfTaskCheck(@Context() [interaction]: SlashCommandContext) {
-    const userTasks = await this.taskService.findByUserId(interaction.user.id);
+    const tasks = await this.taskService.findAll();
+    const userTasks = tasks.filter(
+      (task) => task.userId === interaction.user.id,
+    );
 
-    const userNotCompletedTasks = userTasks.filter((task) => {
-      return task.status !== 'completed';
-    });
+    const userNotCompletedTasks = userTasks.filter(
+      (task) => task.status !== 'completed',
+    );
 
     const embedUserTasks = userNotCompletedTasks.map((task) =>
       new EmbedBuilder()
@@ -34,8 +37,14 @@ export class CheckMyTasksCommand {
       `${interaction.user.username} just checked his ${userTasks.length} tasks`,
     );
 
+    if (embedUserTasks.length > 0)
+      await interaction.reply({
+        embeds: [...embedUserTasks],
+      });
+
     return await interaction.reply({
-      embeds: [...embedUserTasks],
+      content: `You have no tasks, go get some!`,
+      ephemeral: true,
     });
   }
 }

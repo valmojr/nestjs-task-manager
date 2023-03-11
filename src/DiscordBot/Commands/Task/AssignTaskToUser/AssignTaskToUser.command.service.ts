@@ -32,9 +32,7 @@ export class AssignTaskToUserCommand extends EmbedTaskService {
       return 'Task not found';
     }
 
-    const fetchedUser = interaction.client.guilds
-      .resolve(process.env.DISCORD_DEV_GUILD_ID)
-      .members.resolve(params.userId).user;
+    const fetchedUser = interaction.guild.members.resolve(params.userId).user;
 
     const assignedUser: User = {
       ...fetchedUser,

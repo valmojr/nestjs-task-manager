@@ -1,30 +1,35 @@
-import { Goal, Task } from '@prisma/client';
+import { Goal } from '@prisma/client';
 import { Injectable } from '@nestjs/common';
 import { Modal, Ctx, ModalContext } from 'necord';
-import { EmbedTaskService } from 'src/DiscordBot/Commands/Task/util/embedTask.service';
-import { TaskInput } from 'src/task/entity/Task.entity';
 import { CreateGoalHandler } from './CreateGoalHandler.service';
 import { GoalInput } from 'src/goal/entity/Goal.entity';
+import { EmbedBuilder } from '@discordjs/builders';
 
 @Injectable()
-export class CreateTaskModal extends CreateGoalHandler {
+export class CreateGoalModal extends CreateGoalHandler {
   @Modal('goalcreationmodal')
   public async onGoalCreationModal(@Ctx() [interaction]: ModalContext) {
-    const newTask: GoalInput = {
+    const newGoal: GoalInput = {
       title: interaction.fields.getTextInputValue('title'),
       description: interaction.fields.getTextInputValue('description'),
-      status: '0',
+      status: 0,
       image: interaction.fields.getTextInputValue('image'),
       dueDate: null,
     };
 
-    const taskInDatabase: Goal = await this.goalCreatorHandler(
-      newTask,
-      interaction.user.id,
+    const goalInDatabase: Goal = await this.goalCreatorHandler(
+      newGoal,
+      interaction.user.username,
     );
 
     return interaction.reply({
-      embeds: [EmbedTaskService.createTaskEmbed(taskInDatabase)],
+      embeds: [
+        new EmbedBuilder()
+          .setTitle(goalInDatabase.title)
+          .setDescription(goalInDatabase.description)
+          .setImage(goalInDatabase.image)
+          .setFooter({ text: `Goal ID: ${goalInDatabase.id}` }),
+      ],
     });
   }
 }

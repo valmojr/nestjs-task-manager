@@ -43,7 +43,7 @@ export class CreateGoalCommand {
               .setCustomId('image')
               .setLabel('Image URL')
               .setPlaceholder('Image URL')
-              .setRequired(false)
+              .setRequired(true)
               .setStyle(TextInputStyle.Short),
           ]),
         ]),

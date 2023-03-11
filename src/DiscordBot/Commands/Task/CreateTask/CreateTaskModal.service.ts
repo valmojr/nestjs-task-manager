@@ -21,7 +21,7 @@ export class CreateTaskModal extends CreateTaskHandler {
 
     const taskInDatabase: Task = await this.taskCreatorHandler(
       newTask,
-      interaction.user.id,
+      interaction.user.username,
     );
 
     return interaction.reply({

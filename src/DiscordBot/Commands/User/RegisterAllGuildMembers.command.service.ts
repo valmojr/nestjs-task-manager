@@ -1,4 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { EmbedBuilder } from 'discord.js';
 import { Context, SlashCommand, SlashCommandContext } from 'necord';
 import { UserService } from 'src/User/user.service';
 
@@ -11,7 +12,6 @@ export class RegisterAllGuildMembersCommand {
   @SlashCommand({
     name: 'register-all-guild-members',
     description: 'Register all guild members',
-    guilds: [process.env.DISCORD_DEV_GUILD_ID],
   })
   async registerAllGuildMembers(@Context() [interaction]: SlashCommandContext) {
     this.logger.log(
@@ -31,6 +31,7 @@ export class RegisterAllGuildMembersCommand {
 
     return await interaction.reply({
       content: `Registered ${members.size} members`,
+      ephemeral: true,
     });
   }
 }

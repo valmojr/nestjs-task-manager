@@ -1,20 +1,18 @@
 import { EmbedBuilder } from '@discordjs/builders';
 import { Injectable } from '@nestjs/common';
-import { Goal } from '@prisma/client';
-import { TaskService } from 'src/task/task.service';
+import { Goal, Task } from '@prisma/client';
 
 @Injectable()
 export class EmbedGoalService {
-  constructor(private readonly taskService: TaskService) {}
-
-  async createGoalEmbed(goal: Goal) {
-    const goalTasks = await this.taskService.findByGoalId(goal.id);
+  public async createGoalEmbed(goal: Goal, goalTasks: Task[]) {
     const embed = new EmbedBuilder();
 
     embed.setTitle(goal.title);
     embed.setDescription(goal.description);
     embed.setImage(goal.image);
     goalTasks.forEach((task) => {
+      if (task.userId === null) task.userId = 'no one';
+
       embed.addFields({
         name: task.title,
         value: `Assigned to <@${task.userId}>`,
