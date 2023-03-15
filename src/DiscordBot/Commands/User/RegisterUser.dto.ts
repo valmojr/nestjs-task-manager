@@ -6,5 +6,5 @@ export class RegisterUserDTO {
     description: 'The user to register',
     required: true,
   })
-  public username: string;
+  public userId: string;
 }

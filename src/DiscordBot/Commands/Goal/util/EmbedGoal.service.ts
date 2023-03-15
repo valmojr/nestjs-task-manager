@@ -4,7 +4,10 @@ import { Goal, Task } from '@prisma/client';
 
 @Injectable()
 export class EmbedGoalService {
-  public async createGoalEmbed(goal: Goal, goalTasks: Task[]) {
+  public async createGoalEmbed(
+    goal: Goal,
+    goalTasks: Task[],
+  ): Promise<EmbedBuilder> {
     const embed = new EmbedBuilder();
 
     embed.setTitle(goal.title);

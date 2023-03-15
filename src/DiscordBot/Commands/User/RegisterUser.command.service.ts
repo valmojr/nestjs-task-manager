@@ -1,5 +1,6 @@
-import { Injectable } from '@nestjs/common';
-import { SlashCommand, Context, SlashCommandContext, Options } from 'necord';
+import { Injectable, Logger } from '@nestjs/common';
+import { EmbedBuilder } from 'discord.js';
+import { Context, Options, SlashCommand, SlashCommandContext } from 'necord';
 import { UserService } from 'src/User/user.service';
 import { RegisterUserDTO } from './RegisterUser.dto';
 
@@ -7,16 +8,30 @@ import { RegisterUserDTO } from './RegisterUser.dto';
 export class RegisterUserCommand {
   constructor(private readonly userService: UserService) {}
 
+  private readonly logger = new Logger(RegisterUserCommand.name);
+
   @SlashCommand({
-    name: 'register',
-    description: 'Register a user',
+    name: 'register-user',
+    description: 'Register a selected user',
   })
-  public async register(
+  async registerAllGuildMembers(
     @Context() [interaction]: SlashCommandContext,
     @Options() params: RegisterUserDTO,
   ) {
-    const userId = params.username;
-    //this.userService.findOrCreateUser
-    await interaction.reply('Ok');
+    const targetUser = (await interaction.guild.members.fetch(params.userId))
+      .user;
+
+    this.logger.log(`Registering user ${targetUser.username}`);
+
+    const registredUser = await this.userService.findOrCreateUser({
+      id: targetUser.id,
+      name: targetUser.username,
+      avatar: targetUser.avatar,
+    });
+
+    return await interaction.reply({
+      content: `registred ${registredUser.name}`,
+      ephemeral: true,
+    });
   }
 }

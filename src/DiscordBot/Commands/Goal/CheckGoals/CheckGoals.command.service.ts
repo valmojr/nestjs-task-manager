@@ -22,11 +22,11 @@ export class CheckGoalsCommand {
     const embedGoals = goals.map(async (goal) => {
       const goalTasks = this.taskService.findByGoalId(goal.id);
 
-      return this.embedGoalService.createGoalEmbed(goal, await goalTasks);
+      return (await goalTasks).length;
     });
 
     return interaction.reply({
-      content: `We have ${embedGoals.length} goals!`,
+      content: `We have ${goals.length} goals`,
     });
   }
 }
