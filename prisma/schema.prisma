@@ -22,7 +22,7 @@ model Task {
   image       String?
   user        User?     @relation(fields: [userId], references: [id])
   goalId      String?
-  status      String?   @default("pending")
+  status      String?   @default("not_assigned")
   dueDate     DateTime?
   goal        Goal?     @relation(fields: [goalId], references: [id])
   userId      String?
@@ -37,4 +37,9 @@ model Goal {
   dueDate     DateTime?
   users       User[]
   tasks       Task[]
+}
+
+model Guild {
+  id                 String  @id
+  dashboardChannelId String?
 }

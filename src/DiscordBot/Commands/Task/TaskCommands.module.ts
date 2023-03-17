@@ -8,6 +8,7 @@ import { CheckMyTasksCommand } from './CheckMyTasks/CheckMyTasks.command.service
 import { CreateTaskCommand } from './CreateTask/CreateTask.command.service';
 import { CreateTaskHandler } from './CreateTask/CreateTaskHandler.service';
 import { CreateTaskModal } from './CreateTask/CreateTaskModal.service';
+import { CreateTaskReceiver } from './CreateTask/CreateTaskReceiver.service';
 import { ListAllTasksCommand } from './ListAllTasks/ListAllTasks.command.service';
 import { EmbedTaskService } from './util/embedTask.service';
 import { StatusAutoCompleteInterceptor } from './util/status.interceptor.service';
@@ -28,6 +29,7 @@ import { StatusColorPicker } from './util/statuscolors.service';
     CreateTaskCommand,
     CreateTaskHandler,
     CreateTaskModal,
+    CreateTaskReceiver,
     ListAllTasksCommand,
   ],
 })

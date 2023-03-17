@@ -8,6 +8,6 @@ export class PingCommand {
     description: 'Ping!',
   })
   public async ping(@Context() [message]: SlashCommandContext) {
-    await message.reply('Pong!');
+    return await message.reply('Pong!');
   }
 }

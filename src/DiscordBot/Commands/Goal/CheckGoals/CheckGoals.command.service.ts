@@ -1,5 +1,5 @@
-import { EmbedBuilder, MessageResolvable } from 'discord.js';
-import { Injectable } from '@nestjs/common';
+import { EmbedBuilder } from 'discord.js';
+import { Injectable, Logger } from '@nestjs/common';
 import { Context, SlashCommand, SlashCommandContext } from 'necord';
 import { GoalService } from 'src/goal/goal.service';
 import { TaskService } from 'src/task/task.service';
@@ -10,6 +10,8 @@ export class CheckGoalsCommand {
     private readonly goalService: GoalService,
     private readonly taskService: TaskService,
   ) {}
+
+  private logger = new Logger(CheckGoalsCommand.name);
 
   @SlashCommand({
     name: 'check-goals',
@@ -41,25 +43,9 @@ export class CheckGoalsCommand {
       return embedGoal;
     });
 
-    const wipe = async () => {
-      let msg_size = 100;
-      while (msg_size == 100) {
-        try {
-          await interaction.channel
-            .bulkDelete(100)
-            .then((messages) => (msg_size = messages.size))
-            .catch(console.error);
-        } catch (error) {
-          console.log(error);
-        }
-      }
-      interaction.channel.send({
-        content: `nuke!`,
-      });
-    };
+    this.logger.log(`${interaction.user.username} checked the goals`);
 
     if (embedGoals.length > 0) {
-      await wipe();
       return await interaction.reply({
         embeds: [...embedGoals],
         ephemeral: true,
