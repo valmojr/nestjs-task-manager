@@ -42,6 +42,14 @@ export class CreateTaskCommand extends CreateTaskHandler {
           ]),
           new ActionRowBuilder<TextInputBuilder>().addComponents([
             new TextInputBuilder()
+              .setCustomId('goalId')
+              .setLabel('Goal ID')
+              .setPlaceholder('Goal ID')
+              .setRequired(false)
+              .setStyle(TextInputStyle.Short),
+          ]),
+          new ActionRowBuilder<TextInputBuilder>().addComponents([
+            new TextInputBuilder()
               .setCustomId('image')
               .setLabel('Image URL')
               .setPlaceholder('Image URL')

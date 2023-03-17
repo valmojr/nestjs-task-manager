@@ -2,7 +2,6 @@ import { Injectable, Logger } from '@nestjs/common';
 import { EmbedBuilder } from 'discord.js';
 import { Context, SlashCommand, SlashCommandContext } from 'necord';
 import { TaskService } from 'src/task/task.service';
-import { StatusColorPicker } from '../util/statuscolors.service';
 
 @Injectable()
 export class CheckMyTasksCommand {
@@ -37,14 +36,16 @@ export class CheckMyTasksCommand {
       `${interaction.user.username} just checked his ${userTasks.length} tasks`,
     );
 
-    if (embedUserTasks.length > 0)
+    if (embedUserTasks.length > 0) {
       await interaction.reply({
         embeds: [...embedUserTasks],
+        ephemeral: true,
       });
-
-    return await interaction.reply({
-      content: `You have no tasks, go get some!`,
-      ephemeral: true,
-    });
+    } else {
+      return await interaction.reply({
+        content: `You have no tasks, go get some!`,
+        ephemeral: true,
+      });
+    }
   }
 }

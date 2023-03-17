@@ -16,7 +16,7 @@ export class CreateTaskModal extends CreateTaskHandler {
       userId: null,
       image: interaction.fields.getTextInputValue('image'),
       dueDate: null,
-      goalId: null,
+      goalId: interaction.fields.getTextInputValue('goalId'),
     };
 
     const taskInDatabase: Task = await this.taskCreatorHandler(
