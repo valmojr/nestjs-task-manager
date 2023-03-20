@@ -3,10 +3,14 @@ import { Injectable } from '@nestjs/common';
 import { Modal, Ctx, ModalContext } from 'necord';
 import { CreateGoalHandler } from './CreateGoalHandler.service';
 import { GoalInput } from 'src/goal/entity/Goal.entity';
-import { EmbedBuilder } from '@discordjs/builders';
+import { EmbedGoalService } from 'src/DiscordBot/Util/EmbedGoal.service';
 
 @Injectable()
-export class CreateGoalModal extends CreateGoalHandler {
+export class CreateGoalModal {
+  constructor(
+    private readonly createGoalHandler: CreateGoalHandler,
+    private readonly embedGoalService: EmbedGoalService,
+  ) {}
   @Modal('goalcreationmodal')
   public async onGoalCreationModal(@Ctx() [interaction]: ModalContext) {
     const newGoal: GoalInput = {
@@ -17,19 +21,14 @@ export class CreateGoalModal extends CreateGoalHandler {
       dueDate: null,
     };
 
-    const goalInDatabase: Goal = await this.goalCreatorHandler(
-      newGoal,
-      interaction.user.username,
-    );
+    const goalInDatabase: Goal =
+      await this.createGoalHandler.goalCreatorHandler(
+        newGoal,
+        interaction.user.username,
+      );
 
     return interaction.reply({
-      embeds: [
-        new EmbedBuilder()
-          .setTitle(goalInDatabase.title)
-          .setDescription(goalInDatabase.description)
-          .setImage(goalInDatabase.image)
-          .setFooter({ text: `Goal ID: ${goalInDatabase.id}` }),
-      ],
+      embeds: [await this.embedGoalService.generate(goalInDatabase)],
     });
   }
 }

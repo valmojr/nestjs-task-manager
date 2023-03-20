@@ -21,7 +21,7 @@ export class DashboardCommandService {
   })
   async dashboardCreator(@Context() [interaction]: SlashCommandContext) {
     this.logger.log(
-      `Dashboard command called by ${interaction.user.username} in ${interaction.channel.name} - ${interaction.guild.name}`,
+      `Dashboard command called by ${interaction.user.username} in ${interaction.guild.name} - ${interaction.guild.name}`,
     );
 
     ChannelWiper([interaction]);
@@ -36,6 +36,7 @@ export class DashboardCommandService {
         return await this.embedGoalService.addTasks(embedGoal, goalTasks);
       }),
     );
+
     return interaction.reply({
       content: `Dashboard with ${goals.length} goals and ${tasks.length} tasks`,
       embeds: embedGoals,

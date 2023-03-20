@@ -3,9 +3,16 @@ import { ColorResolvable } from 'discord.js';
 
 @Injectable()
 export class StatusColorPicker {
-  public getColor(status: number): ColorResolvable {
-    if (status == 0) {
-      return '#000';
+  public static getColor(status: number): ColorResolvable {
+    if (
+      status == 0 ||
+      status == null ||
+      status == undefined ||
+      status < 0 ||
+      status > 100 ||
+      isNaN(status)
+    ) {
+      return 'DarkButNotBlack';
     } else if (status < 25) {
       return 'Red';
     } else if (status < 50) {
@@ -16,6 +23,8 @@ export class StatusColorPicker {
       return 'Green';
     } else if (status == 100) {
       return 'Blue';
+    } else {
+      return 'DarkButNotBlack';
     }
   }
 }
