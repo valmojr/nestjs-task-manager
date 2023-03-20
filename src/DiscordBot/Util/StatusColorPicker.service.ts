@@ -3,7 +3,7 @@ import { ColorResolvable } from 'discord.js';
 
 @Injectable()
 export class StatusColorPicker {
-  public static getColor(status: number): ColorResolvable {
+  public static getGoalColor(status: number): ColorResolvable {
     if (
       status == 0 ||
       status == null ||
@@ -25,6 +25,23 @@ export class StatusColorPicker {
       return 'Blue';
     } else {
       return 'DarkButNotBlack';
+    }
+  }
+
+  public static getTaskColor(status: string): ColorResolvable {
+    switch (status) {
+      case 'not_assigned':
+        return 'Red';
+      case 'pending':
+        return 'Yellow';
+      case 'completed':
+        return 'Green';
+      case 'stuck':
+        return 'Red';
+      case 'on_hold':
+        return 'Grey';
+      default:
+        return 'Grey';
     }
   }
 }

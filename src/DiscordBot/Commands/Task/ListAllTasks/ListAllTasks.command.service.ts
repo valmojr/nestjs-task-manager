@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Ctx, SlashCommand, SlashCommandContext } from 'necord';
 import { TaskService } from 'src/task/task.service';
-import { EmbedTaskService } from '../util/embedTask.service';
+import { EmbedGeneratorService } from 'src/DiscordBot/Util/EmbedGenerator.service';
 
 @Injectable()
 export class ListAllTasksCommand {
@@ -17,7 +17,7 @@ export class ListAllTasksCommand {
     const tasks = await this.taskService.findAll();
 
     const embedTasks = tasks.map((task) =>
-      EmbedTaskService.createTaskEmbed(task),
+      EmbedGeneratorService.createTaskEmbed(task),
     );
 
     return interaction.reply({

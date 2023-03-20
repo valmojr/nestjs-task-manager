@@ -2,12 +2,12 @@ import { Injectable, Logger } from '@nestjs/common';
 import { Task } from '@prisma/client';
 import { randomUUID } from 'crypto';
 import { PrismaService } from 'src/Database/Prisma.service';
-import { EmbedTaskService } from 'src/DiscordBot/Commands/Task/util/embedTask.service';
+import { EmbedGeneratorService } from 'src/DiscordBot/Util/EmbedGenerator.service';
 import { TaskInput } from 'src/task/entity/Task.entity';
 import { CreateTaskCommand } from './CreateTask.command.service';
 
 @Injectable()
-export class CreateTaskHandler extends EmbedTaskService {
+export class CreateTaskHandler extends EmbedGeneratorService {
   constructor(private readonly prisma: PrismaService) {
     super();
   }

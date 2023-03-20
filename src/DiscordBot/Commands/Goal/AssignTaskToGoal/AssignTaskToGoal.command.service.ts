@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator'
 import { Context, Options, SlashCommand, SlashCommandContext } from 'necord';
 import { GoalService } from 'src/goal/goal.service';
 import { TaskService } from 'src/task/task.service';
-import { EmbedTaskService } from '../../Task/util/embedTask.service';
+import { EmbedGeneratorService } from 'src/DiscordBot/Util/EmbedGenerator.service';
 import { AssignTaskToGoalDTO } from './AssignTaskToGoalDTO';
 
 @Injectable()
@@ -46,7 +46,7 @@ export class AssignTaskToGoalCommand {
 
     return await interaction.reply({
       content: `${currentTask.title} assigned to ${targetGoal.title}`,
-      embeds: [EmbedTaskService.createTaskEmbed(assignTask)],
+      embeds: [EmbedGeneratorService.createTaskEmbed(assignTask)],
     });
   }
 }

@@ -3,7 +3,7 @@ import { Goal, Task } from '@prisma/client';
 import { EmbedBuilder } from 'discord.js';
 import { StatusColorPicker } from './StatusColorPicker.service';
 @Injectable()
-export class EmbedGoalService {
+export class EmbedGeneratorService {
   public async generate(goal: Goal): Promise<EmbedBuilder> {
     const embed = new EmbedBuilder();
     embed.setTitle(goal.title);
@@ -24,7 +24,7 @@ export class EmbedGoalService {
     console.log(completeTasks);
     console.log(statusNumber);
 
-    embedGoal.setColor(StatusColorPicker.getColor(statusNumber));
+    embedGoal.setColor(StatusColorPicker.getGoalColor(statusNumber));
     goalTasks.forEach((task) => {
       task.userId === null
         ? (task.userId = 'no one')
@@ -38,5 +38,34 @@ export class EmbedGoalService {
     });
 
     return embedGoal;
+  }
+
+  public static createTaskEmbed(task: Task) {
+    const embed = new EmbedBuilder();
+
+    embed.setTitle(task.title);
+    embed.setDescription(task.description);
+    embed.setColor(StatusColorPicker.getTaskColor(task.status));
+
+    embed.addFields({
+      name: 'Status',
+      value: task.status,
+      inline: true,
+    });
+    if (task.userId)
+      embed.addFields({
+        name: 'Assigned to',
+        value: `<@${task.userId}>`,
+        inline: true,
+      });
+    if (task.dueDate)
+      embed.addFields({
+        name: 'Due Date',
+        value: task.dueDate.toString(),
+        inline: true,
+      });
+    if ('id' in task) embed.setFooter({ text: `Task ID: ${task.id}` });
+
+    return embed;
   }
 }

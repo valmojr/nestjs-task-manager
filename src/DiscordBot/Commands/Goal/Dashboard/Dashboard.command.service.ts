@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Context, SlashCommand, SlashCommandContext } from 'necord';
 import ChannelWiper from 'src/DiscordBot/Util/ChannelWiper';
-import { EmbedGoalService } from 'src/DiscordBot/Util/EmbedGoal.service';
+import { EmbedGeneratorService } from 'src/DiscordBot/Util/EmbedGenerator.service';
 import { GoalService } from 'src/goal/goal.service';
 import { TaskService } from 'src/task/task.service';
 
@@ -10,7 +10,7 @@ export class DashboardCommandService {
   constructor(
     private readonly goalService: GoalService,
     private readonly taskService: TaskService,
-    private readonly embedGoalService: EmbedGoalService,
+    private readonly embedGeneratorService: EmbedGeneratorService,
   ) {}
 
   private logger = new Logger(DashboardCommandService.name);
@@ -32,8 +32,8 @@ export class DashboardCommandService {
     const embedGoals = await Promise.all(
       goals.map(async (goal) => {
         const goalTasks = tasks.filter((task) => task.goalId === goal.id);
-        const embedGoal = await this.embedGoalService.generate(goal);
-        return await this.embedGoalService.addTasks(embedGoal, goalTasks);
+        const embedGoal = await this.embedGeneratorService.generate(goal);
+        return await this.embedGeneratorService.addTasks(embedGoal, goalTasks);
       }),
     );
 

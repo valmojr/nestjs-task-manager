@@ -1,8 +1,7 @@
 import { Injectable, UseInterceptors } from '@nestjs/common';
 import { SlashCommand, Context, SlashCommandContext, Options } from 'necord';
-import { StatusAutoCompleteInterceptor } from '../util/status.interceptor.service';
+import { StatusAutoCompleteInterceptor } from '../status.interceptor.service';
 import { CreateTaskDTO } from './CreateTask.dto';
-import { EmbedTaskService } from 'src/DiscordBot/Commands/Task/util/embedTask.service';
 import { CreateTaskHandler } from './CreateTaskHandler.service';
 import {
   ModalBuilder,
@@ -10,6 +9,7 @@ import {
   TextInputBuilder,
   TextInputStyle,
 } from 'discord.js';
+import { EmbedGeneratorService } from 'src/DiscordBot/Util/EmbedGenerator.service';
 
 @Injectable()
 export class CreateTaskCommand extends CreateTaskHandler {
@@ -76,7 +76,7 @@ export class CreateTaskCommand extends CreateTaskHandler {
     );
 
     return await interaction.reply({
-      embeds: [EmbedTaskService.createTaskEmbed(newTask)],
+      embeds: [EmbedGeneratorService.createTaskEmbed(newTask)],
     });
   }
 }

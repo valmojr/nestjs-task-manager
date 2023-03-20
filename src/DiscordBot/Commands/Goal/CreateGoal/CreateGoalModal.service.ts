@@ -3,13 +3,13 @@ import { Injectable } from '@nestjs/common';
 import { Modal, Ctx, ModalContext } from 'necord';
 import { CreateGoalHandler } from './CreateGoalHandler.service';
 import { GoalInput } from 'src/goal/entity/Goal.entity';
-import { EmbedGoalService } from 'src/DiscordBot/Util/EmbedGoal.service';
+import { EmbedGeneratorService } from 'src/DiscordBot/Util/EmbedGenerator.service';
 
 @Injectable()
 export class CreateGoalModal {
   constructor(
     private readonly createGoalHandler: CreateGoalHandler,
-    private readonly embedGoalService: EmbedGoalService,
+    private readonly embedGeneratorService: EmbedGeneratorService,
   ) {}
   @Modal('goalcreationmodal')
   public async onGoalCreationModal(@Ctx() [interaction]: ModalContext) {
@@ -28,7 +28,7 @@ export class CreateGoalModal {
       );
 
     return interaction.reply({
-      embeds: [await this.embedGoalService.generate(goalInDatabase)],
+      embeds: [await this.embedGeneratorService.generate(goalInDatabase)],
     });
   }
 }

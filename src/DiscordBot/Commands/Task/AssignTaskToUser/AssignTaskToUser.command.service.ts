@@ -1,13 +1,13 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { SlashCommand, Context, SlashCommandContext, Options } from 'necord';
-import { EmbedTaskService } from 'src/DiscordBot/Commands/Task/util/embedTask.service';
+import { EmbedGeneratorService } from 'src/DiscordBot/Util/EmbedGenerator.service';
 import { AssignTaskToUserDTO } from './AssignTaskToUser.dto';
 import { TaskService } from 'src/task/task.service';
 import { UserService } from 'src/User/user.service';
 import { User } from '@prisma/client';
 
 @Injectable()
-export class AssignTaskToUserCommand extends EmbedTaskService {
+export class AssignTaskToUserCommand extends EmbedGeneratorService {
   constructor(
     private readonly taskService: TaskService,
     private readonly userService: UserService,
@@ -58,7 +58,7 @@ export class AssignTaskToUserCommand extends EmbedTaskService {
 
     return await interaction.reply({
       content: `${currentTask.title} assigned to ${params.userId}`,
-      embeds: [EmbedTaskService.createTaskEmbed(assignedTask)],
+      embeds: [EmbedGeneratorService.createTaskEmbed(assignedTask)],
     });
   }
 }

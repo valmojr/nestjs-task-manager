@@ -9,8 +9,7 @@ import { CreateGoalCommand } from './CreateGoal/CreateGoal.command.service';
 import { CreateGoalHandler } from './CreateGoal/CreateGoalHandler.service';
 import { CreateGoalModal } from './CreateGoal/CreateGoalModal.service';
 import { DashboardCommandService } from './Dashboard/Dashboard.command.service';
-import { EmbedGoalService } from 'src/DiscordBot/Util/EmbedGoal.service';
-import { StatusColorPicker } from '../Task/util/statuscolors.service';
+import { EmbedGeneratorService } from 'src/DiscordBot/Util/EmbedGenerator.service';
 
 @Module({
   imports: [],
@@ -19,8 +18,7 @@ import { StatusColorPicker } from '../Task/util/statuscolors.service';
     GoalService,
     UserService,
     TaskService,
-    EmbedGoalService,
-    StatusColorPicker,
+    EmbedGeneratorService,
     CreateGoalCommand,
     CreateGoalHandler,
     CreateGoalModal,

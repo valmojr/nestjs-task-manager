@@ -1,7 +1,7 @@
 import { Task } from '@prisma/client';
 import { Injectable } from '@nestjs/common';
 import { Modal, Ctx, ModalContext } from 'necord';
-import { EmbedTaskService } from 'src/DiscordBot/Commands/Task/util/embedTask.service';
+import { EmbedGeneratorService } from 'src/DiscordBot/Util/EmbedGenerator.service';
 import { CreateTaskHandler } from './CreateTaskHandler.service';
 import { TaskInput } from 'src/task/entity/Task.entity';
 import {
@@ -46,7 +46,7 @@ export class CreateTaskModal {
     });
 
     return interaction.reply({
-      embeds: [EmbedTaskService.createTaskEmbed(taskInDatabase)],
+      embeds: [EmbedGeneratorService.createTaskEmbed(taskInDatabase)],
       components: [
         new ActionRowBuilder<UserSelectMenuBuilder>().addComponents(
           new UserSelectMenuBuilder()
