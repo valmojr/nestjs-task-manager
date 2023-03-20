@@ -12,7 +12,7 @@ CREATE TABLE "Task" (
     "description" TEXT,
     "image" TEXT,
     "goalId" TEXT,
-    "status" TEXT DEFAULT 'pending',
+    "status" TEXT DEFAULT 'not_assigned',
     "dueDate" DATETIME,
     "userId" TEXT,
     CONSTRAINT "Task_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE SET NULL ON UPDATE CASCADE,
@@ -25,8 +25,14 @@ CREATE TABLE "Goal" (
     "title" TEXT NOT NULL,
     "description" TEXT,
     "image" TEXT,
-    "status" TEXT DEFAULT 'pending',
+    "status" INTEGER DEFAULT 0,
     "dueDate" DATETIME
+);
+
+-- CreateTable
+CREATE TABLE "Guild" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "dashboardChannelId" TEXT
 );
 
 -- CreateTable
