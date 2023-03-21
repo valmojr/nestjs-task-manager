@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { ScheduleModule } from '@nestjs/schedule';
 import { NecordModule } from 'necord';
 import { GoalCommandsModule } from './Commands/Goal/GoalCommands.module';
 import { TaskCommandsModule } from './Commands/Task/TaskCommands.module';
@@ -8,6 +9,7 @@ import { DiscordBotConfigService } from './DiscordBotConfig.service';
 
 @Module({
   imports: [
+    ScheduleModule.forRoot(),
     NecordModule.forRootAsync({
       useClass: DiscordBotConfigService,
     }),

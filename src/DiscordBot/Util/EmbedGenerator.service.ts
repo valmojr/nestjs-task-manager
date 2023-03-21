@@ -21,9 +21,6 @@ export class EmbedGeneratorService {
 
     const statusNumber = Math.round((completeTasks / goalTasks.length) * 100);
 
-    console.log(completeTasks);
-    console.log(statusNumber);
-
     embedGoal.setColor(StatusColorPicker.getGoalColor(statusNumber));
     goalTasks.forEach((task) => {
       task.userId === null

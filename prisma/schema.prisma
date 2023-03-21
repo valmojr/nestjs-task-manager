@@ -38,8 +38,3 @@ model Goal {
   users       User[]
   tasks       Task[]
 }
-
-model Guild {
-  id                 String  @id
-  dashboardChannelId String?
-}

@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Context, SlashCommand, SlashCommandContext } from 'necord';
+import { CronService } from 'src/DiscordBot/Cron.service';
 import ChannelWiper from 'src/DiscordBot/Util/ChannelWiper';
 import { EmbedGeneratorService } from 'src/DiscordBot/Util/EmbedGenerator.service';
 import { GoalService } from 'src/goal/goal.service';
@@ -23,7 +24,6 @@ export class DashboardCommandService {
     this.logger.log(
       `Dashboard command called by ${interaction.user.username} in ${interaction.guild.name} - ${interaction.guild.name}`,
     );
-
     ChannelWiper([interaction]);
 
     const goals = await this.goalService.findAll();
@@ -37,9 +37,20 @@ export class DashboardCommandService {
       }),
     );
 
+    new CronService('*/30 * * * * *', () => {
+      ChannelWiper([interaction]);
+      this.logger.log(
+        `${interaction.guild.name} - ${interaction.channel.name} - Dashboard updated`,
+      );
+      interaction.channel.send({
+        content: `${interaction.guild.name} - ${interaction.channel.name}`,
+        embeds: embedGoals,
+      });
+    });
+
     return interaction.reply({
-      content: `Dashboard with ${goals.length} goals and ${tasks.length} tasks`,
-      embeds: embedGoals,
+      content: `Dashboard assigned`,
+      ephemeral: true,
     });
   }
 }
