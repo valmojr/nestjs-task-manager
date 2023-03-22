@@ -64,10 +64,21 @@ export class TaskService {
     });
   }
 
-  async assignTask(taskId: string, userId: string): Promise<Task> {
+  async assignTaskToUser(taskId: string, userId: string): Promise<Task> {
     return await this.prisma.task.update({
       where: { id: taskId },
       data: { userId, status: 'pending' },
+    });
+  }
+
+  async assignTaskToGoal(taskId: string, goalId: string): Promise<Task> {
+    const task = await this.findById(taskId);
+    let status: 'pending' | 'not_assigned';
+    task.userId ? (status = 'pending') : (status = 'not_assigned');
+
+    return await this.prisma.task.update({
+      where: { id: taskId },
+      data: { goalId, status },
     });
   }
 }

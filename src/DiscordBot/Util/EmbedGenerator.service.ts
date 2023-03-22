@@ -41,12 +41,14 @@ export class EmbedGeneratorService {
     const embed = new EmbedBuilder();
 
     embed.setTitle(task.title);
-    embed.setDescription(task.description);
+    task.description
+      ? embed.setDescription(task.description)
+      : embed.setDescription('No description provided');
     embed.setColor(StatusColorPicker.getTaskColor(task.status));
 
     embed.addFields({
       name: 'Status',
-      value: task.status,
+      value: this.literalTaskStatus(task),
       inline: true,
     });
     if (task.userId)
@@ -64,5 +66,22 @@ export class EmbedGeneratorService {
     if ('id' in task) embed.setFooter({ text: `Task ID: ${task.id}` });
 
     return embed;
+  }
+
+  public static literalTaskStatus({ status }: Task): string {
+    switch (status) {
+      case 'not_assigned':
+        return 'Not Assigned';
+      case 'pending':
+        return 'Pending';
+      case 'completed':
+        return 'Completed';
+      case 'stuck':
+        return 'Stuck';
+      case 'on_hold':
+        return 'On Hold';
+      default:
+        return 'Unknown';
+    }
   }
 }
