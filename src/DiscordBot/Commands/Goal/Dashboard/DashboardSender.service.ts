@@ -19,13 +19,13 @@ export class DashboardSenderService extends EmbedGeneratorService {
     await interaction.channel.setName(`dashboard`);
 
     await interaction.channel.send({
-      content: `${interaction.guild.name} Dashboard`,
+      content: `**${interaction.guild.name} Dashboard**`,
       components: [_ButtonRow([CreateGoalButton(), CreateTaskButton()])],
     });
 
     goals.forEach(async (goal) => {
       await interaction.channel.send({
-        content: `Goal: ${goal.title}`,
+        content: `**Goal:** ${goal.title}`,
         embeds: [await this.generate(goal)],
         components: [
           _ButtonRow([EditGoalButton(goal.id), DeleteGoalButton(goal.id)]),
@@ -50,6 +50,7 @@ export class DashboardSenderService extends EmbedGeneratorService {
           });
         } else {
           interaction.channel.send({
+            content: `Task: ${task.title} assigned to <@${task.userId}>`,
             embeds: [await this.createTaskEmbed(task)],
             components: [
               _ButtonRow([

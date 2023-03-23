@@ -1,18 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { CronExpression } from '@nestjs/schedule';
-import { ActionRowBuilder, ButtonBuilder } from 'discord.js';
-import {
-  Button,
-  ButtonContext,
-  ComponentParam,
-  Context,
-  Ctx,
-  SlashCommand,
-  SlashCommandContext,
-} from 'necord';
+import { Context, SlashCommand, SlashCommandContext } from 'necord';
 import { CronService } from 'src/DiscordBot/Cron.service';
 import ChannelWiper from 'src/DiscordBot/Util/ChannelWiper';
-import { EmbedGeneratorService } from 'src/DiscordBot/Util/EmbedGenerator.service';
 import { GoalService } from 'src/goal/goal.service';
 import { TaskService } from 'src/task/task.service';
 import { DashboardSenderService } from './DashboardSender.service';
@@ -41,7 +31,7 @@ export class DashboardCommandService {
 
     interaction.channel.setName('dashboard');
 
-    new CronService(CronExpression.EVERY_5_MINUTES, async () => {
+    new CronService('0 */30 14-22 * * *', async () => {
       this.logger.log(`Updating Dashboard at ${new Date().toISOString()}`);
       await ChannelWiper([interaction]);
 
