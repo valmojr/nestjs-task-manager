@@ -8,7 +8,7 @@ export class StatusAutoCompleteInterceptor extends AutocompleteInterceptor {
     const focused = interaction.options.getFocused(true);
     let choices: string[];
 
-    if (focused.name === 'anime') {
+    if (focused.name === 'status') {
       choices = ['not_assigned', 'pending', 'done', 'completed', 'on_hold'];
     }
 

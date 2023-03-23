@@ -1,5 +1,4 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { EmbedBuilder } from 'discord.js';
 import { Context, Options, SlashCommand, SlashCommandContext } from 'necord';
 import { UserService } from 'src/User/user.service';
 import { RegisterUserDTO } from './RegisterUser.dto';

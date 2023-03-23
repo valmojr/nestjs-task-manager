@@ -1,4 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { ActionRowBuilder, ButtonBuilder } from 'discord.js';
 import {
   Button,
   Ctx,
@@ -13,6 +14,13 @@ import {
 import { GoalService } from 'src/goal/goal.service';
 import { TaskService } from 'src/task/task.service';
 import { UserService } from 'src/User/user.service';
+import AssignTaskToMeButton from './Buttons/AssignTaskToMe.button';
+import DeleteTaskButton from './Buttons/DeleteTaskButton';
+import CreateGoalModal from './Modals/CreateGoal.modal';
+import CreateTaskModal from './Modals/CreateTask.modal';
+import EditTaskModal from './Modals/EditTask.modal';
+import AssignTaskToGoalStringSelectMenu from './SelectMenus/AssignTaskToGoal.StringSelectMenu';
+import AssignTaskToUserUserSelectMenu from './SelectMenus/AssignTaskToUser.UserSelectMenu';
 
 @Injectable()
 export class MessageComponentHandlersService {
@@ -67,7 +75,7 @@ export class MessageComponentHandlersService {
     });
   }
 
-  @Button('UnassignTaskToMe/:taskId')
+  @Button('UnassignTask/:taskId')
   async unassignTaskToMe(
     @Ctx() [interaction]: ButtonContext,
     @ComponentParam('taskId') taskId: string,
@@ -95,6 +103,66 @@ export class MessageComponentHandlersService {
       content: `Task ${task.title} deleted`,
       ephemeral: true,
     });
+  }
+
+  @Button('AddMoreInfoToTask/:value')
+  async addMoreInfoButtonHandler(
+    @Context() [interaction]: ButtonContext,
+    @ComponentParam('value') taskId: string,
+  ) {
+    this.logger.log(
+      taskId + 'AddMoreInfo function called by ' + interaction.user.username,
+    );
+
+    const goals = await this.goalService.findAll();
+    const goalOptions = goals.map((goal) => ({
+      label: goal.title,
+      value: goal.id.toString(),
+    }));
+
+    if (goals.length === 0) {
+      return interaction.reply({
+        content: `Add more info:`,
+        components: [AssignTaskToUserUserSelectMenu(taskId)],
+      });
+    } else {
+      return interaction.reply({
+        content: `Add more info:`,
+        components: [
+          AssignTaskToUserUserSelectMenu(taskId),
+          AssignTaskToGoalStringSelectMenu(taskId, goalOptions),
+          new ActionRowBuilder<ButtonBuilder>().addComponents([
+            AssignTaskToMeButton(taskId),
+            DeleteTaskButton(taskId),
+          ]),
+        ],
+        ephemeral: true,
+      });
+    }
+  }
+
+  @Button('CreateTask')
+  async createTaskButtonHandler(@Context() [interaction]: ButtonContext) {
+    interaction.showModal(CreateTaskModal());
+  }
+
+  @Button('CreateGoal')
+  async createGoalButtonHandler(@Context() [interaction]: ButtonContext) {
+    interaction.showModal(CreateGoalModal());
+  }
+
+  @Button('EditTask/:value')
+  async editTaskButtonHandler(
+    @Context() [interaction]: ButtonContext,
+    @ComponentParam('value') taskId: string,
+  ) {
+    const task = await this.taskService.findById(taskId);
+
+    this.logger.log(
+      `${task.title} EditTask button pressed by ${interaction.user.username}`,
+    );
+
+    return interaction.showModal(EditTaskModal(taskId));
   }
 
   @UserSelect('assignTaskToUser/:value')

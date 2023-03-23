@@ -3,7 +3,10 @@ import { Goal, Task } from '@prisma/client';
 import { ActionRowBuilder, ButtonBuilder } from 'discord.js';
 import AssignTaskToMeButton from 'src/DiscordBot/Util/Buttons/AssignTaskToMe.button';
 import CompleteTaskButtonButton from 'src/DiscordBot/Util/Buttons/CompleteTaskButton.button';
+import CreateGoalButton from 'src/DiscordBot/Util/Buttons/CreateGoal.button';
+import CreateTaskButton from 'src/DiscordBot/Util/Buttons/CreateTask.button';
 import DeleteTaskButton from 'src/DiscordBot/Util/Buttons/DeleteTaskButton';
+import _ButtonRow from 'src/DiscordBot/Util/Buttons/_ButtonRow';
 import { EmbedGeneratorService } from 'src/DiscordBot/Util/EmbedGenerator.service';
 
 @Injectable()
@@ -82,5 +85,14 @@ export class DashboardSenderService extends EmbedGeneratorService {
         }
       }, 1000),
     );
+
+    interaction.channel.send({
+      components: [
+        new ActionRowBuilder<ButtonBuilder>().addComponents([
+          CreateGoalButton(),
+          CreateTaskButton(),
+        ]),
+      ],
+    });
   }
 }

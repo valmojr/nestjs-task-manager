@@ -1,11 +1,14 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { EmbedBuilder } from 'discord.js';
 import { Context, SlashCommand, SlashCommandContext } from 'necord';
+import { EmbedGeneratorService } from 'src/DiscordBot/Util/EmbedGenerator.service';
 import { TaskService } from 'src/task/task.service';
 
 @Injectable()
 export class CheckMyTasksCommand {
-  constructor(private readonly taskService: TaskService) {}
+  constructor(
+    private readonly taskService: TaskService,
+    private readonly embedGeneratorService: EmbedGeneratorService,
+  ) {}
 
   private logger = new Logger(CheckMyTasksCommand.name);
 
@@ -16,29 +19,24 @@ export class CheckMyTasksCommand {
   })
   public async onSelfTaskCheck(@Context() [interaction]: SlashCommandContext) {
     const tasks = await this.taskService.findAll();
-    const userTasks = tasks.filter(
-      (task) => task.userId === interaction.user.id,
+    const userNotCompletedTasks = tasks.filter(
+      (task) =>
+        task.userId === interaction.user.id && task.status !== 'completed',
     );
 
-    const userNotCompletedTasks = userTasks.filter(
-      (task) => task.status !== 'completed',
-    );
-
-    const embedUserTasks = userNotCompletedTasks.map((task) =>
-      new EmbedBuilder()
-        .setTitle(task.title)
-        .setDescription(task.description)
-        .setColor('Yellow')
-        .setFooter({ text: `Task ID: ${task.id}` }),
+    const embedUserTasks = await Promise.all(
+      userNotCompletedTasks.map((task) =>
+        this.embedGeneratorService.createTaskEmbed(task),
+      ),
     );
 
     this.logger.log(
-      `${interaction.user.username} just checked his ${userTasks.length} tasks`,
+      `${interaction.user.username} just checked his pendent tasks`,
     );
 
     if (embedUserTasks.length > 0) {
       await interaction.reply({
-        embeds: [...embedUserTasks],
+        embeds: embedUserTasks,
         ephemeral: true,
       });
     } else {

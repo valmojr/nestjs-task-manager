@@ -1,4 +1,3 @@
-import { Goal } from '@prisma/client';
 import { ActionRowBuilder, StringSelectMenuBuilder } from 'discord.js';
 
 export default (

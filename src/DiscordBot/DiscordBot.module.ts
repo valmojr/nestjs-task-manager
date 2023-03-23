@@ -10,7 +10,9 @@ import { TaskCommandsModule } from './Commands/Task/TaskCommands.module';
 import { UserCommandsModule } from './Commands/User/UserCommands.module';
 import { DiscordBotService } from './DiscordBot.service';
 import { DiscordBotConfigService } from './DiscordBotConfig.service';
+import { EmbedGeneratorService } from './Util/EmbedGenerator.service';
 import { MessageComponentHandlersService } from './Util/MessageComponentHandlers.service';
+import { ModalHandlersService } from './Util/ModalHandlers.service';
 
 @Module({
   imports: [
@@ -28,7 +30,9 @@ import { MessageComponentHandlersService } from './Util/MessageComponentHandlers
     GoalService,
     UserService,
     PrismaService,
+    EmbedGeneratorService,
     MessageComponentHandlersService,
+    ModalHandlersService,
   ],
 })
 export class DiscordBotModule {}

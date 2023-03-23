@@ -42,16 +42,10 @@ export class AssignTaskToUserCommand extends EmbedGeneratorService {
 
     await this.userService.findOrCreateUser(assignedUser);
 
-    const assignedTask = await this.taskService.updateById(params.taskId, {
-      id: currentTask.id,
-      title: currentTask.title,
-      description: currentTask.description,
-      image: currentTask.image,
-      status: 'pending',
-      dueDate: currentTask.dueDate,
-      goalId: currentTask.goalId,
-      userId: assignedUser.id,
-    });
+    const assignedTask = await this.taskService.assignTaskToUser(
+      params.taskId,
+      assignedUser.id,
+    );
 
     this.logger.log(
       `Task ${currentTask.title} assigned to ${assignedUser.name}`,

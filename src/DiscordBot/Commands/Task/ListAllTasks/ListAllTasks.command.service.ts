@@ -26,7 +26,7 @@ export class ListAllTasksCommand {
     );
 
     return interaction.reply({
-      embeds: [...embedTasks],
+      embeds: embedTasks,
       ephemeral: true,
     });
   }

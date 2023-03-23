@@ -6,8 +6,6 @@ import { UserService } from 'src/User/user.service';
 import { AssignTaskToGoalCommand } from './AssignTaskToGoal/AssignTaskToGoal.command.service';
 import { CheckGoalsCommand } from './CheckGoals/CheckGoals.command.service';
 import { CreateGoalCommand } from './CreateGoal/CreateGoal.command.service';
-import { CreateGoalHandler } from './CreateGoal/CreateGoalHandler.service';
-import { CreateGoalModal } from './CreateGoal/CreateGoalModal.service';
 import { DashboardCommandService } from './Dashboard/Dashboard.command.service';
 import { EmbedGeneratorService } from 'src/DiscordBot/Util/EmbedGenerator.service';
 import { DashboardSenderService } from './Dashboard/DashboardSender.service';
@@ -21,8 +19,6 @@ import { DashboardSenderService } from './Dashboard/DashboardSender.service';
     TaskService,
     EmbedGeneratorService,
     CreateGoalCommand,
-    CreateGoalHandler,
-    CreateGoalModal,
     AssignTaskToGoalCommand,
     CheckGoalsCommand,
     DashboardCommandService,
