@@ -9,7 +9,6 @@ export class EmbedGeneratorService {
     embed.setTitle(goal.title);
     embed.setDescription(goal.description);
     embed.setImage(goal.image);
-    embed.setFooter({ text: `ID: ${goal.id}` });
 
     return embed;
   }
@@ -63,7 +62,6 @@ export class EmbedGeneratorService {
         value: task.dueDate.toString(),
         inline: true,
       });
-    if ('id' in task) embed.setFooter({ text: `Task ID: ${task.id}` });
 
     return embed;
   }

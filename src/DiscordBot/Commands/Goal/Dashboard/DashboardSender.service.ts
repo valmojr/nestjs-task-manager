@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { Goal, Task } from '@prisma/client';
 import AddMoreInfoToTaskButton from 'src/DiscordBot/Util/Buttons/AddMoreInfoToTask.button';
 import AssignTaskToMeButton from 'src/DiscordBot/Util/Buttons/AssignTaskToMe.button';
 import CompleteTaskButtonButton from 'src/DiscordBot/Util/Buttons/CompleteTaskButton.button';
@@ -11,11 +10,26 @@ import EditGoalButton from 'src/DiscordBot/Util/Buttons/EditGoal.button';
 import EditTaskButton from 'src/DiscordBot/Util/Buttons/EditTask.button';
 import UnassignTaskButton from 'src/DiscordBot/Util/Buttons/UnassignTask.button';
 import _ButtonRow from 'src/DiscordBot/Util/Buttons/_ButtonRow';
+import ChannelWiper from 'src/DiscordBot/Util/ChannelWiper';
 import { EmbedGeneratorService } from 'src/DiscordBot/Util/EmbedGenerator.service';
+import { GoalService } from 'src/goal/goal.service';
+import { TaskService } from 'src/task/task.service';
 
 @Injectable()
 export class DashboardSenderService extends EmbedGeneratorService {
-  public async overview([interaction]: any, goals: Goal[], tasks: Task[]) {
+  constructor(
+    private readonly goalService: GoalService,
+    private readonly taskService: TaskService,
+  ) {
+    super();
+  }
+
+  public async overview([interaction]: any) {
+    await ChannelWiper([interaction]);
+
+    const goals = await this.goalService.findAll();
+    const tasks = await this.taskService.findAll();
+
     await interaction.channel.setName(`dashboard`);
 
     await interaction.channel.send({

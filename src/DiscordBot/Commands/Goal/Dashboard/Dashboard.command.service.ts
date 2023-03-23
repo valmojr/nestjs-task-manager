@@ -1,17 +1,20 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { CronExpression } from '@nestjs/schedule';
-import { Context, SlashCommand, SlashCommandContext } from 'necord';
+import {
+  Button,
+  ButtonContext,
+  Context,
+  SlashCommand,
+  SlashCommandContext,
+} from 'necord';
 import { CronService } from 'src/DiscordBot/Cron.service';
-import ChannelWiper from 'src/DiscordBot/Util/ChannelWiper';
-import { GoalService } from 'src/goal/goal.service';
-import { TaskService } from 'src/task/task.service';
+import DashboardConfirmButton from 'src/DiscordBot/Util/Buttons/DashboardConfirm.button';
+import DashboardDenyButton from 'src/DiscordBot/Util/Buttons/DashboardDeny.button';
+import _ButtonRow from 'src/DiscordBot/Util/Buttons/_ButtonRow';
 import { DashboardSenderService } from './DashboardSender.service';
 
 @Injectable()
 export class DashboardCommandService {
   constructor(
-    private readonly goalService: GoalService,
-    private readonly taskService: TaskService,
     private readonly dashboardSenderService: DashboardSenderService,
   ) {}
 
@@ -26,20 +29,43 @@ export class DashboardCommandService {
       `Dashboard command called by ${interaction.user.username} in ${interaction.guild.name} - ${interaction.channel.name}`,
     );
 
-    const goals = await this.goalService.findAll();
-    const tasks = await this.taskService.findAll();
+    return interaction.reply({
+      content: `Creating a Dashboard in this channel will erase all messages in this channel. Are you sure you want to continue?`,
+      components: [
+        _ButtonRow([DashboardConfirmButton(), DashboardDenyButton()]),
+      ],
+      ephemeral: true,
+    });
+  }
+
+  @Button('dashboardConfirmCreation')
+  async dashboardConfirmCreation(@Context() [interaction]: ButtonContext) {
+    this.logger.log(
+      `Dashboard command confirmed by ${interaction.user.username} in ${interaction.guild.name} - ${interaction.channel.name}`,
+    );
 
     interaction.channel.setName('dashboard');
 
-    new CronService('0 */30 14-22 * * *', async () => {
+    new CronService('0 */10 14-22 * * *', async () => {
       this.logger.log(`Updating Dashboard at ${new Date().toISOString()}`);
-      await ChannelWiper([interaction]);
 
-      await this.dashboardSenderService.overview([interaction], goals, tasks);
+      await this.dashboardSenderService.overview([interaction]);
     });
 
     return interaction.reply({
-      content: `Dashboard configured for this channel`,
+      content: `Dashboard created in this channel.`,
+      ephemeral: true,
+    });
+  }
+
+  @Button('dashboardDenyCreation')
+  async dashboardDenyCreation(@Context() [interaction]: ButtonContext) {
+    this.logger.log(
+      `Dashboard command denied by ${interaction.user.username} in ${interaction.guild.name} - ${interaction.channel.name}`,
+    );
+
+    return interaction.reply({
+      content: `Dashboard creation cancelled.`,
       ephemeral: true,
     });
   }
