@@ -71,6 +71,13 @@ export class TaskService {
     });
   }
 
+  async unassignTaskToUser(taskId: string): Promise<Task> {
+    return await this.prisma.task.update({
+      where: { id: taskId },
+      data: { userId: null, status: 'not_assigned' },
+    });
+  }
+
   async assignTaskToGoal(taskId: string, goalId: string): Promise<Task> {
     const task = await this.findById(taskId);
     let status: 'pending' | 'not_assigned';
@@ -79,6 +86,20 @@ export class TaskService {
     return await this.prisma.task.update({
       where: { id: taskId },
       data: { goalId, status },
+    });
+  }
+
+  async unassignTaskToGoal(taskId: string): Promise<Task> {
+    return await this.prisma.task.update({
+      where: { id: taskId },
+      data: { goalId: null },
+    });
+  }
+
+  async completeTask(taskId: string): Promise<Task> {
+    return await this.prisma.task.update({
+      where: { id: taskId },
+      data: { status: 'done' },
     });
   }
 }

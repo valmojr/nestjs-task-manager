@@ -26,7 +26,11 @@ import {
   UserSelect,
   UserSelectContext,
 } from 'necord';
+import AssignTaskToMeButton from 'src/DiscordBot/Util/Buttons/AssignTaskToMe.button';
+import DeleteTaskButton from 'src/DiscordBot/Util/Buttons/DeleteTaskButton';
 import { EmbedGeneratorService } from 'src/DiscordBot/Util/EmbedGenerator.service';
+import AssignTaskToGoalStringSelectMenu from 'src/DiscordBot/Util/SelectMenus/AssignTaskToGoal.StringSelectMenu';
+import AssignTaskToUserUserSelectMenu from 'src/DiscordBot/Util/SelectMenus/AssignTaskToUser.UserSelectMenu';
 import { GoalService } from 'src/goal/goal.service';
 import { TaskInput } from 'src/task/entity/Task.entity';
 import { TaskService } from 'src/task/task.service';
@@ -38,6 +42,7 @@ export class CreateTaskCommandService {
     private readonly taskService: TaskService,
     private readonly userService: UserService,
     private readonly goalService: GoalService,
+    private readonly embedGeneratorService: EmbedGeneratorService,
   ) {}
   private logger = new Logger(CreateTaskCommandService.name);
 
@@ -90,15 +95,8 @@ export class CreateTaskCommandService {
 
     const createdTask = await this.taskService.create(imputedTask);
 
-    const goals = await this.goalService.findAll();
-
-    const goalOptions = goals.map((goal) => ({
-      label: goal.title,
-      value: goal.id.toString(),
-    }));
-
     return interaction.reply({
-      embeds: [EmbedGeneratorService.createTaskEmbed(createdTask)],
+      embeds: [await this.embedGeneratorService.createTaskEmbed(createdTask)],
       components: [
         new ActionRowBuilder<ButtonBuilder>().addComponents(
           new ButtonBuilder()
@@ -130,124 +128,21 @@ export class CreateTaskCommandService {
     if (goals.length === 0) {
       return interaction.reply({
         content: `Add more info:`,
-        components: [
-          new ActionRowBuilder<UserSelectMenuBuilder>().addComponents(
-            new UserSelectMenuBuilder()
-              .setCustomId(`assignThisTask/${taskId}`)
-              .setPlaceholder('Assign to anyone')
-              .setMaxValues(1)
-              .setMinValues(1),
-          ),
-        ],
+        components: [AssignTaskToUserUserSelectMenu(taskId)],
       });
     } else {
       return interaction.reply({
         content: `Add more info:`,
         components: [
-          new ActionRowBuilder<UserSelectMenuBuilder>().addComponents(
-            new UserSelectMenuBuilder()
-              .setCustomId(`assignTaskToUser/${taskId}`)
-              .setPlaceholder('Assign to anyone')
-              .setMaxValues(1)
-              .setMinValues(1),
-          ),
-          new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(
-            new StringSelectMenuBuilder()
-              .setCustomId(`assignTaskToGoal/${taskId}`)
-              .setPlaceholder('Assign to a goal')
-              .setMaxValues(1)
-              .setMinValues(1)
-              .addOptions(goalOptions),
-          ),
+          AssignTaskToUserUserSelectMenu(taskId),
+          AssignTaskToGoalStringSelectMenu(taskId, goalOptions),
           new ActionRowBuilder<ButtonBuilder>().addComponents([
-            new ButtonBuilder()
-              .setCustomId(`AssignTaskToMe/${taskId}`)
-              .setLabel('Assign to me')
-              .setEmoji('👍')
-              .setStyle(ButtonStyle.Primary),
-            new ButtonBuilder()
-              .setCustomId(`deleteThisTask/${taskId}`)
-              .setLabel('Delete this task')
-              .setEmoji('🗑️')
-              .setStyle(ButtonStyle.Danger),
+            AssignTaskToMeButton(taskId),
+            DeleteTaskButton(taskId),
           ]),
         ],
         ephemeral: true,
       });
     }
-  }
-
-  @UserSelect('assignTaskToUser/:value')
-  async onSelectMenuAssignToTask(
-    @Context() [interaction]: UserSelectContext,
-    @ComponentParam('value') taskId: string,
-  ) {
-    this.logger.log(taskId + ' called by ' + interaction.user.username);
-    const userId = interaction.values[0];
-
-    await this.userService.findOrCreateUser({
-      id: userId,
-      name: interaction.user.username,
-      avatar: interaction.user.avatar,
-    });
-
-    const assignedTask = await this.taskService.assignTaskToUser(
-      taskId,
-      userId,
-    );
-    return interaction.reply({
-      content: `Task ${assignedTask.title} assigned to <@${userId}>`,
-      ephemeral: true,
-    });
-  }
-
-  @StringSelect('assignTaskToGoal/:value')
-  public async assignTaskToGoal(
-    @Context() [interaction]: StringSelectContext,
-    @ComponentParam('value') taskId: string,
-  ) {
-    this.logger.log(
-      taskId + ' assigned to a goal by ' + interaction.user.username,
-    );
-    const goalId = interaction.values[0];
-    const task = await this.taskService.assignTaskToGoal(taskId, goalId);
-
-    return interaction.reply({
-      content: `Task ${task.title} has been assigned to a goal`,
-      ephemeral: true,
-    });
-  }
-
-  @Button('AssignTaskToMe/:value')
-  public async assignTaskToMe(
-    @Context() [interaction]: ButtonContext,
-    @ComponentParam('value') taskId: string,
-  ) {
-    const task = await this.taskService.assignTaskToUser(
-      taskId,
-      interaction.user.id,
-    );
-
-    this.logger.log(task.title + ' assigned to ' + interaction.user.username);
-
-    return interaction.reply({
-      content: `Task ${task.title} has been assigned to you`,
-      ephemeral: true,
-    });
-  }
-
-  @Button('deleteThisTask/:value')
-  public async deleteThisTask(
-    @Context() [interaction]: ButtonContext,
-    @ComponentParam('value') taskId: string,
-  ) {
-    const task = await this.taskService.removeById(taskId);
-
-    this.logger.log(task.title + ' deleted by ' + interaction.user.username);
-
-    return interaction.reply({
-      content: `Task ${task.title} has been deleted`,
-      ephemeral: true,
-    });
   }
 }

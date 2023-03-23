@@ -6,12 +6,9 @@ import {
   TextInputStyle,
 } from 'discord.js';
 import { Context, SlashCommand, SlashCommandContext } from 'necord';
-import { GoalService } from 'src/goal/goal.service';
 
 @Injectable()
 export class CreateGoalCommand {
-  constructor(private readonly goalService: GoalService) {}
-
   @SlashCommand({
     name: 'create-goal',
     description: 'Create a goal by popup',

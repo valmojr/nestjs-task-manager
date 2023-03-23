@@ -11,6 +11,7 @@ export class AssignTaskToUserCommand extends EmbedGeneratorService {
   constructor(
     private readonly taskService: TaskService,
     private readonly userService: UserService,
+    private readonly embedGeneratorService: EmbedGeneratorService,
   ) {
     super();
   }
@@ -58,7 +59,7 @@ export class AssignTaskToUserCommand extends EmbedGeneratorService {
 
     return await interaction.reply({
       content: `${currentTask.title} assigned to ${params.userId}`,
-      embeds: [EmbedGeneratorService.createTaskEmbed(assignedTask)],
+      embeds: [await this.embedGeneratorService.createTaskEmbed(assignedTask)],
     });
   }
 }

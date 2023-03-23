@@ -11,6 +11,7 @@ export class AssignTaskToGoalCommand {
   constructor(
     private readonly goalService: GoalService,
     private readonly taskService: TaskService,
+    private readonly embedGeneratorService: EmbedGeneratorService,
   ) {}
 
   private logger = new Logger(AssignTaskToGoalCommand.name);
@@ -46,7 +47,7 @@ export class AssignTaskToGoalCommand {
 
     return await interaction.reply({
       content: `${currentTask.title} assigned to ${targetGoal.title}`,
-      embeds: [EmbedGeneratorService.createTaskEmbed(assignTask)],
+      embeds: [await this.embedGeneratorService.createTaskEmbed(assignTask)],
     });
   }
 }

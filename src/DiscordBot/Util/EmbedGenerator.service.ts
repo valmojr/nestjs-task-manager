@@ -29,7 +29,7 @@ export class EmbedGeneratorService {
 
       embedGoal.addFields({
         name: task.title,
-        value: `Assigned to: ${task.userId}`,
+        value: `Assigned to ${task.userId}`,
         inline: true,
       });
     });
@@ -37,7 +37,7 @@ export class EmbedGeneratorService {
     return embedGoal;
   }
 
-  public static createTaskEmbed(task: Task) {
+  public async createTaskEmbed(task: Task) {
     const embed = new EmbedBuilder();
 
     embed.setTitle(task.title);
@@ -68,7 +68,7 @@ export class EmbedGeneratorService {
     return embed;
   }
 
-  public static literalTaskStatus({ status }: Task): string {
+  public literalTaskStatus({ status }: Task): string {
     switch (status) {
       case 'not_assigned':
         return 'Not Assigned';

@@ -1,17 +1,27 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { Context, SlashCommand, SlashCommandContext } from 'necord';
+import { ActionRowBuilder, ButtonBuilder } from 'discord.js';
+import {
+  Button,
+  ButtonContext,
+  ComponentParam,
+  Context,
+  Ctx,
+  SlashCommand,
+  SlashCommandContext,
+} from 'necord';
 import { CronService } from 'src/DiscordBot/Cron.service';
 import ChannelWiper from 'src/DiscordBot/Util/ChannelWiper';
 import { EmbedGeneratorService } from 'src/DiscordBot/Util/EmbedGenerator.service';
 import { GoalService } from 'src/goal/goal.service';
 import { TaskService } from 'src/task/task.service';
+import { DashboardSenderService } from './DashboardSender.service';
 
 @Injectable()
 export class DashboardCommandService {
   constructor(
     private readonly goalService: GoalService,
     private readonly taskService: TaskService,
-    private readonly embedGeneratorService: EmbedGeneratorService,
+    private readonly dashboardSenderService: DashboardSenderService,
   ) {}
 
   private logger = new Logger(DashboardCommandService.name);
@@ -22,34 +32,23 @@ export class DashboardCommandService {
   })
   async dashboardCreator(@Context() [interaction]: SlashCommandContext) {
     this.logger.log(
-      `Dashboard command called by ${interaction.user.username} in ${interaction.guild.name} - ${interaction.guild.name}`,
+      `Dashboard command called by ${interaction.user.username} in ${interaction.guild.name} - ${interaction.channel.name}`,
     );
-    ChannelWiper([interaction]);
 
     const goals = await this.goalService.findAll();
     const tasks = await this.taskService.findAll();
 
-    const embedGoals = await Promise.all(
-      goals.map(async (goal) => {
-        const goalTasks = tasks.filter((task) => task.goalId === goal.id);
-        const embedGoal = await this.embedGeneratorService.generate(goal);
-        return await this.embedGeneratorService.addTasks(embedGoal, goalTasks);
-      }),
-    );
+    interaction.channel.setName('dashboard');
 
-    new CronService('*/30 * * * * *', () => {
-      ChannelWiper([interaction]);
-      this.logger.log(
-        `${interaction.guild.name} - ${interaction.channel.name} - Dashboard updated`,
-      );
-      interaction.channel.send({
-        content: `${interaction.guild.name} - ${interaction.channel.name}`,
-        embeds: embedGoals,
-      });
+    new CronService('0 * * * * *', async () => {
+      this.logger.log(`Updating Dashboard at ${new Date().toISOString()}`);
+      await ChannelWiper([interaction]);
+
+      await this.dashboardSenderService.overview([interaction], goals, tasks);
     });
 
     return interaction.reply({
-      content: `Dashboard assigned`,
+      content: `Dashboard configured for this channel`,
       ephemeral: true,
     });
   }

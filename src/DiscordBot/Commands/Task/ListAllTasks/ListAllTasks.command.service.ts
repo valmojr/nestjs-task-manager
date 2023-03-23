@@ -5,7 +5,10 @@ import { EmbedGeneratorService } from 'src/DiscordBot/Util/EmbedGenerator.servic
 
 @Injectable()
 export class ListAllTasksCommand {
-  constructor(private readonly taskService: TaskService) {}
+  constructor(
+    private readonly taskService: TaskService,
+    private readonly embedGeneratorService: EmbedGeneratorService,
+  ) {}
 
   @SlashCommand({
     name: 'list-all-tasks',
@@ -16,8 +19,10 @@ export class ListAllTasksCommand {
   ) {
     const tasks = await this.taskService.findAll();
 
-    const embedTasks = tasks.map((task) =>
-      EmbedGeneratorService.createTaskEmbed(task),
+    const embedTasks = await Promise.all(
+      tasks.map(
+        async (task) => await this.embedGeneratorService.createTaskEmbed(task),
+      ),
     );
 
     return interaction.reply({
