@@ -5,4 +5,4 @@ export default () =>
     .setCustomId('CreateGoal')
     .setLabel('Create Goal')
     .setEmoji('🎯')
-    .setStyle(ButtonStyle.Primary);
+    .setStyle(ButtonStyle.Success);
