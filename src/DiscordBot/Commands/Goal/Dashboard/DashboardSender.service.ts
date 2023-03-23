@@ -1,98 +1,99 @@
 import { Injectable } from '@nestjs/common';
 import { Goal, Task } from '@prisma/client';
-import { ActionRowBuilder, ButtonBuilder } from 'discord.js';
+import AddMoreInfoToTaskButton from 'src/DiscordBot/Util/Buttons/AddMoreInfoToTask.button';
 import AssignTaskToMeButton from 'src/DiscordBot/Util/Buttons/AssignTaskToMe.button';
 import CompleteTaskButtonButton from 'src/DiscordBot/Util/Buttons/CompleteTaskButton.button';
 import CreateGoalButton from 'src/DiscordBot/Util/Buttons/CreateGoal.button';
 import CreateTaskButton from 'src/DiscordBot/Util/Buttons/CreateTask.button';
+import DeleteGoalButton from 'src/DiscordBot/Util/Buttons/DeleteGoalButton';
 import DeleteTaskButton from 'src/DiscordBot/Util/Buttons/DeleteTaskButton';
+import EditGoalButton from 'src/DiscordBot/Util/Buttons/EditGoal.button';
+import EditTaskButton from 'src/DiscordBot/Util/Buttons/EditTask.button';
+import UnassignTaskButton from 'src/DiscordBot/Util/Buttons/UnassignTask.button';
 import _ButtonRow from 'src/DiscordBot/Util/Buttons/_ButtonRow';
 import { EmbedGeneratorService } from 'src/DiscordBot/Util/EmbedGenerator.service';
 
 @Injectable()
 export class DashboardSenderService extends EmbedGeneratorService {
   public async overview([interaction]: any, goals: Goal[], tasks: Task[]) {
+    await interaction.channel.setName(`dashboard`);
+
+    await interaction.channel.send({
+      content: `${interaction.guild.name} Dashboard`,
+      components: [_ButtonRow([CreateGoalButton(), CreateTaskButton()])],
+    });
+
     goals.forEach(async (goal) => {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await interaction.channel.send({
+        content: `Goal: ${goal.title}`,
+        embeds: [await this.generate(goal)],
+        components: [
+          _ButtonRow([EditGoalButton(goal.id), DeleteGoalButton(goal.id)]),
+        ],
+      });
 
       const thisGoalTasks = tasks.filter((task) => task.goalId === goal.id);
 
-      await interaction.channel.send({
-        content: `**${goal.title}**`,
-        embeds: [await this.generate(goal)],
-      });
-
-      if (thisGoalTasks.length > 0) {
-        thisGoalTasks.forEach(async (task) => {
-          if (!task.userId) {
-            interaction.channel.send({
-              embeds: [await this.createTaskEmbed(task)],
-              components: [
-                new ActionRowBuilder<ButtonBuilder>().addComponents([
-                  AssignTaskToMeButton(task.id),
-                  CompleteTaskButtonButton(task.id),
-                  DeleteTaskButton(task.id),
-                ]),
-              ],
-            });
-          } else {
-            interaction.channel.send({
-              embeds: [await this.createTaskEmbed(task)],
-              components: [
-                new ActionRowBuilder<ButtonBuilder>().addComponents([
-                  CompleteTaskButtonButton(task.id),
-                  DeleteTaskButton(task.id),
-                ]),
-              ],
-            });
-          }
-        });
-      }
-    });
-
-    const tasksWithoutGoals = tasks.filter((task) => !task.goalId);
-
-    await new Promise(() =>
-      setTimeout(() => {
-        if (tasksWithoutGoals.length > 0) {
+      thisGoalTasks.forEach(async (task) => {
+        if (!task.userId) {
           interaction.channel.send({
-            content: `**Tasks without Goals:**`,
+            embeds: [await this.createTaskEmbed(task)],
+            components: [
+              _ButtonRow([
+                AssignTaskToMeButton(task.id),
+                EditTaskButton(task.id),
+                AddMoreInfoToTaskButton(task.id),
+                CompleteTaskButtonButton(task.id),
+                DeleteTaskButton(task.id),
+              ]),
+            ],
           });
-          tasksWithoutGoals.forEach(async (task) => {
-            if (!task.userId) {
-              interaction.channel.send({
-                embeds: [await this.createTaskEmbed(task)],
-                components: [
-                  new ActionRowBuilder<ButtonBuilder>().addComponents([
-                    AssignTaskToMeButton(task.id),
-                    CompleteTaskButtonButton(task.id),
-                    DeleteTaskButton(task.id),
-                  ]),
-                ],
-              });
-            } else {
-              interaction.channel.send({
-                embeds: [await this.createTaskEmbed(task)],
-                components: [
-                  new ActionRowBuilder<ButtonBuilder>().addComponents([
-                    CompleteTaskButtonButton(task.id),
-                    DeleteTaskButton(task.id),
-                  ]),
-                ],
-              });
-            }
+        } else {
+          interaction.channel.send({
+            embeds: [await this.createTaskEmbed(task)],
+            components: [
+              _ButtonRow([
+                UnassignTaskButton(task.id),
+                EditTaskButton(task.id),
+                CompleteTaskButtonButton(task.id),
+                DeleteTaskButton(task.id),
+              ]),
+            ],
           });
         }
-      }, 1000),
-    );
+      });
+    });
 
-    interaction.channel.send({
-      components: [
-        new ActionRowBuilder<ButtonBuilder>().addComponents([
-          CreateGoalButton(),
-          CreateTaskButton(),
-        ]),
-      ],
+    const tasksWithoutGoal = tasks.filter((task) => !task.goalId);
+
+    tasksWithoutGoal.forEach(async (task) => {
+      if (!task.userId) {
+        interaction.channel.send({
+          embeds: [await this.createTaskEmbed(task)],
+          components: [
+            _ButtonRow([
+              AssignTaskToMeButton(task.id),
+              EditTaskButton(task.id),
+              AddMoreInfoToTaskButton(task.id),
+              CompleteTaskButtonButton(task.id),
+              DeleteTaskButton(task.id),
+            ]),
+          ],
+        });
+      } else {
+        interaction.channel.send({
+          embeds: [await this.createTaskEmbed(task)],
+          components: [
+            _ButtonRow([
+              UnassignTaskButton(task.id),
+              EditTaskButton(task.id),
+              AddMoreInfoToTaskButton(task.id),
+              CompleteTaskButtonButton(task.id),
+              DeleteTaskButton(task.id),
+            ]),
+          ],
+        });
+      }
     });
   }
 }

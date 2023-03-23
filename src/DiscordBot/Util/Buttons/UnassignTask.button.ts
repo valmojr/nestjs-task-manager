@@ -5,4 +5,4 @@ export default (taskId: string) =>
     .setCustomId(`UnassignTask/${taskId}`)
     .setLabel('Unassign')
     .setEmoji('👎')
-    .setStyle(ButtonStyle.Secondary);
+    .setStyle(ButtonStyle.Primary);

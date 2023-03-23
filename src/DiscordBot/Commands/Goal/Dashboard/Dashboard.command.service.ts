@@ -1,4 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { CronExpression } from '@nestjs/schedule';
 import { ActionRowBuilder, ButtonBuilder } from 'discord.js';
 import {
   Button,
@@ -40,7 +41,7 @@ export class DashboardCommandService {
 
     interaction.channel.setName('dashboard');
 
-    new CronService('0 * * * * *', async () => {
+    new CronService(CronExpression.EVERY_5_MINUTES, async () => {
       this.logger.log(`Updating Dashboard at ${new Date().toISOString()}`);
       await ChannelWiper([interaction]);
 

@@ -18,6 +18,7 @@ import AssignTaskToMeButton from './Buttons/AssignTaskToMe.button';
 import DeleteTaskButton from './Buttons/DeleteTaskButton';
 import CreateGoalModal from './Modals/CreateGoal.modal';
 import CreateTaskModal from './Modals/CreateTask.modal';
+import EditGoalModal from './Modals/EditGoal.modal';
 import EditTaskModal from './Modals/EditTask.modal';
 import AssignTaskToGoalStringSelectMenu from './SelectMenus/AssignTaskToGoal.StringSelectMenu';
 import AssignTaskToUserUserSelectMenu from './SelectMenus/AssignTaskToUser.UserSelectMenu';
@@ -163,6 +164,37 @@ export class MessageComponentHandlersService {
     );
 
     return interaction.showModal(EditTaskModal(taskId));
+  }
+
+  @Button('EditGoal/:value')
+  async editGoalButtonHandler(
+    @Context() [interaction]: ButtonContext,
+    @ComponentParam('value') goalId: string,
+  ) {
+    const goal = await this.goalService.findById(goalId);
+
+    this.logger.log(
+      `${goal.title} EditGoal button pressed by ${interaction.user.username}`,
+    );
+
+    interaction.showModal(EditGoalModal(goalId));
+  }
+
+  @Button('DeleteGoal/:value')
+  async deleteGoalButtonHandler(
+    @Context() [interaction]: ButtonContext,
+    @ComponentParam('value') goalId: string,
+  ) {
+    const goal = await this.goalService.removeById(goalId);
+
+    this.logger.log(
+      `${goal.title} DeleteGoal button pressed by ${interaction.user.username}`,
+    );
+
+    return interaction.reply({
+      content: `Goal ${goal.title} deleted`,
+      ephemeral: true,
+    });
   }
 
   @UserSelect('assignTaskToUser/:value')

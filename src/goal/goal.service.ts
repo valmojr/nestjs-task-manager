@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Goal } from '@prisma/client';
 import { PrismaService } from 'src/Database/Prisma.service';
 import { randomUUID } from 'crypto';
+import { GoalInput } from './entity/Goal.entity';
 
 @Injectable()
 export class GoalService {
@@ -49,7 +50,7 @@ export class GoalService {
     });
   }
 
-  async updateById(id: string, goal: Goal) {
+  async updateById(id: string, goal: GoalInput) {
     return await this.prisma.goal.update({
       where: { id },
       data: goal,

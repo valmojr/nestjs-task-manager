@@ -2,7 +2,7 @@ import { ButtonBuilder, ButtonStyle } from 'discord.js';
 
 export default (taskId: string) =>
   new ButtonBuilder()
-    .setCustomId(`EditTask/${taskId}`)
+    .setCustomId(`EditGoal/${taskId}`)
     .setLabel('Edit')
     .setEmoji('✏️')
     .setStyle(ButtonStyle.Secondary);

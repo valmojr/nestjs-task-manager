@@ -7,7 +7,6 @@ import { GoalInput } from 'src/goal/entity/Goal.entity';
 import { GoalService } from 'src/goal/goal.service';
 import { TaskInput } from 'src/task/entity/Task.entity';
 import { TaskService } from 'src/task/task.service';
-import { UserService } from 'src/User/user.service';
 import AddMoreInfoToTaskButton from './Buttons/AddMoreInfoToTask.button';
 import { EmbedGeneratorService } from './EmbedGenerator.service';
 
@@ -16,7 +15,6 @@ export class ModalHandlersService {
   constructor(
     private readonly taskService: TaskService,
     private readonly goalService: GoalService,
-    private readonly userService: UserService,
     private readonly embedGeneratorService: EmbedGeneratorService,
   ) {}
 
@@ -103,6 +101,30 @@ export class ModalHandlersService {
 
     return interaction.reply({
       embeds: [await this.embedGeneratorService.generate(goalInDatabase)],
+    });
+  }
+
+  @Modal('editGoalModal/:value')
+  async editGoalModalHandler(
+    @Ctx() [interaction]: ModalContext,
+    @ComponentParam('value') goalId: string,
+  ) {
+    const editedGoal: GoalInput = {
+      title: interaction.fields.getTextInputValue('goalName'),
+      description: interaction.fields.getTextInputValue('goalDescription'),
+      image: interaction.fields.getTextInputValue('goalImage'),
+    };
+
+    const createdGoal = await this.goalService.updateById(goalId, editedGoal);
+
+    return interaction.reply({
+      embeds: [await this.embedGeneratorService.generate(createdGoal)],
+      components: [
+        new ActionRowBuilder<ButtonBuilder>().addComponents(
+          AddMoreInfoToTaskButton(createdGoal.id),
+        ),
+      ],
+      ephemeral: true,
     });
   }
 }
