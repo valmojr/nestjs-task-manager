@@ -1,5 +1,4 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { ActionRowBuilder, ButtonBuilder } from 'discord.js';
 import {
   Button,
   Ctx,
@@ -16,6 +15,8 @@ import { TaskService } from 'src/task/task.service';
 import { UserService } from 'src/User/user.service';
 import AssignTaskToMeButton from './Buttons/AssignTaskToMe.button';
 import DeleteTaskButton from './Buttons/DeleteTaskButton';
+import _ButtonRow from './Buttons/_ButtonRow';
+import { MessageGeneratorService } from './Messanger/MessageGenerator.service';
 import CreateGoalModal from './Modals/CreateGoal.modal';
 import CreateTaskModal from './Modals/CreateTask.modal';
 import EditGoalModal from './Modals/EditGoal.modal';
@@ -29,6 +30,7 @@ export class MessageComponentHandlersService {
     private readonly taskService: TaskService,
     private readonly goalService: GoalService,
     private readonly userService: UserService,
+    private readonly messageGeneratorService: MessageGeneratorService,
   ) {}
 
   private logger = new Logger(MessageComponentHandlersService.name);
@@ -53,6 +55,8 @@ export class MessageComponentHandlersService {
       `Task ${task.title} assigned to ${interaction.user.username}`,
     );
 
+    await this.messageGeneratorService.editTaskMessage([interaction], task);
+
     return interaction.reply({
       content: `Task ${task.title} assigned to you`,
       ephemeral: true,
@@ -70,6 +74,8 @@ export class MessageComponentHandlersService {
       `Task ${task.title} completed by ${interaction.user.username}`,
     );
 
+    await this.messageGeneratorService.editTaskMessage([interaction], task);
+
     return interaction.reply({
       content: `Task ${task.title} completed`,
       ephemeral: true,
@@ -84,6 +90,8 @@ export class MessageComponentHandlersService {
     const task = await this.taskService.unassignTaskToUser(taskId);
 
     this.logger.log(`Task ${task.title} unassigned`);
+
+    await this.messageGeneratorService.editTaskMessage([interaction], task);
 
     return interaction.reply({
       content: `Task ${task.title} unassigned`,
@@ -100,6 +108,8 @@ export class MessageComponentHandlersService {
 
     this.logger.log(`Task ${task.title} deleted`);
 
+    await interaction.message.delete();
+
     return interaction.reply({
       content: `Task ${task.title} deleted`,
       ephemeral: true,
@@ -111,8 +121,10 @@ export class MessageComponentHandlersService {
     @Context() [interaction]: ButtonContext,
     @ComponentParam('value') taskId: string,
   ) {
+    const task = await this.taskService.findById(taskId);
+
     this.logger.log(
-      taskId + 'AddMoreInfo function called by ' + interaction.user.username,
+      `Task ${task.title} AddMoreInfo button pressed by ${interaction.user.username}`,
     );
 
     const goals = await this.goalService.findAll();
@@ -124,17 +136,23 @@ export class MessageComponentHandlersService {
     if (goals.length === 0) {
       return interaction.reply({
         content: `Add more info:`,
-        components: [AssignTaskToUserUserSelectMenu(taskId)],
+        components: [
+          AssignTaskToUserUserSelectMenu(task.id),
+          _ButtonRow([
+            AssignTaskToMeButton(task.id),
+            DeleteTaskButton(task.id),
+          ]),
+        ],
       });
     } else {
       return interaction.reply({
         content: `Add more info:`,
         components: [
-          AssignTaskToUserUserSelectMenu(taskId),
-          AssignTaskToGoalStringSelectMenu(taskId, goalOptions),
-          new ActionRowBuilder<ButtonBuilder>().addComponents([
-            AssignTaskToMeButton(taskId),
-            DeleteTaskButton(taskId),
+          AssignTaskToUserUserSelectMenu(task.id),
+          AssignTaskToGoalStringSelectMenu(task.id, goalOptions),
+          _ButtonRow([
+            AssignTaskToMeButton(task.id),
+            DeleteTaskButton(task.id),
           ]),
         ],
         ephemeral: true,
@@ -215,6 +233,12 @@ export class MessageComponentHandlersService {
       taskId,
       userId,
     );
+
+    await this.messageGeneratorService.editTaskMessage(
+      [interaction],
+      assignedTask,
+    );
+
     return interaction.reply({
       content: `Task ${assignedTask.title} assigned to <@${userId}>`,
       ephemeral: true,
@@ -230,10 +254,18 @@ export class MessageComponentHandlersService {
       taskId + ' assigned to a goal by ' + interaction.user.username,
     );
     const goalId = interaction.values[0];
-    const task = await this.taskService.assignTaskToGoal(taskId, goalId);
+    const assignedTask = await this.taskService.assignTaskToGoal(
+      taskId,
+      goalId,
+    );
+
+    await this.messageGeneratorService.editTaskMessage(
+      [interaction],
+      assignedTask,
+    );
 
     return interaction.reply({
-      content: `Task ${task.title} has been assigned to a goal`,
+      content: `Task ${assignedTask.title} has been assigned to a goal`,
       ephemeral: true,
     });
   }

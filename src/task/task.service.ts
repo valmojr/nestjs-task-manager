@@ -99,7 +99,7 @@ export class TaskService {
   async completeTask(taskId: string): Promise<Task> {
     return await this.prisma.task.update({
       where: { id: taskId },
-      data: { status: 'done' },
+      data: { status: 'completed' },
     });
   }
 }

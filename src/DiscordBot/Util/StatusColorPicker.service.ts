@@ -44,4 +44,39 @@ export class StatusColorPicker {
         return 'Grey';
     }
   }
+
+  public static getGoalEmoji(status: number): string {
+    if (
+      status == 0 ||
+      status == null ||
+      status == undefined ||
+      status < 0 ||
+      status > 100 ||
+      isNaN(status)
+    ) {
+      return ':beginner: :rocket:                                                           :dart:';
+    } else if (status < 10) {
+      return ':beginner::fire: :rocket:                                                     :dart:';
+    } else if (status < 20) {
+      return ':beginner::fire::fire: :rocket:                                               :dart:';
+    } else if (status < 30) {
+      return ':beginner::fire::fire::fire::rocket:                                          :dart:';
+    } else if (status < 40) {
+      return ':beginner::fire::fire::fire::fire::rocket:                                    :dart:';
+    } else if (status < 50) {
+      return ':beginner::fire::fire::fire::fire::fire::rocket:                              :dart:';
+    } else if (status < 60) {
+      return ':beginner::fire::fire::fire::fire::fire::fire: :rocket:                       :dart:';
+    } else if (status < 70) {
+      return ':beginner::fire::fire::fire::fire::fire::fire::fire: :rocket:                 :dart:';
+    } else if (status < 80) {
+      return ':beginner::fire::fire::fire::fire::fire::fire::fire::fire: :rocket:           :dart:';
+    } else if (status < 90) {
+      return ':beginner::fire::fire::fire::fire::fire::fire::fire::fire::fire: :rocket:     :dart:';
+    } else if (status === 100) {
+      return ':beginner::fire::fire::fire::fire::fire::fire::fire::fire::fire::fire::rocket::dart:';
+    } else {
+      return ':beginner: :rocket:                                                           :dart:';
+    }
+  }
 }

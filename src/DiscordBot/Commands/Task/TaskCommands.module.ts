@@ -4,7 +4,6 @@ import { EmbedGeneratorService } from 'src/DiscordBot/Util/EmbedGenerator.servic
 import { GoalService } from 'src/goal/goal.service';
 import { TaskService } from 'src/task/task.service';
 import { UserService } from 'src/User/user.service';
-import { DashboardSenderService } from '../Goal/Dashboard/DashboardSender.service';
 import { AssignTaskToUserCommand } from './AssignTaskToUser/AssignTaskToUser.command.service';
 import { CheckMyTasksCommand } from './CheckMyTasks/CheckMyTasks.command.service';
 import { CreateTaskCommandService } from './CreateTasks/CreateTask.command.service';
@@ -24,7 +23,6 @@ import { StatusAutoCompleteInterceptor } from './status.interceptor.service';
     CreateTaskCommandService,
     ListAllTasksCommand,
     EmbedGeneratorService,
-    DashboardSenderService,
   ],
 })
 export class TaskCommandsModule {}

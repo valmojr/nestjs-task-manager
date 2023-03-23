@@ -6,9 +6,7 @@ import { UserService } from 'src/User/user.service';
 import { AssignTaskToGoalCommand } from './AssignTaskToGoal/AssignTaskToGoal.command.service';
 import { CheckGoalsCommand } from './CheckGoals/CheckGoals.command.service';
 import { CreateGoalCommand } from './CreateGoal/CreateGoal.command.service';
-import { DashboardCommandService } from './Dashboard/Dashboard.command.service';
 import { EmbedGeneratorService } from 'src/DiscordBot/Util/EmbedGenerator.service';
-import { DashboardSenderService } from './Dashboard/DashboardSender.service';
 
 @Module({
   imports: [],
@@ -21,8 +19,6 @@ import { DashboardSenderService } from './Dashboard/DashboardSender.service';
     CreateGoalCommand,
     AssignTaskToGoalCommand,
     CheckGoalsCommand,
-    DashboardCommandService,
-    DashboardSenderService,
   ],
 })
 export class GoalCommandsModule {}
