@@ -57,6 +57,25 @@ export class GoalService {
     });
   }
 
+  async updateStatus(id: string) {
+    const thisGoalTasks = await this.prisma.task.findMany({
+      where: { goalId: id },
+    });
+
+    const thisGoalCompletedTasks = thisGoalTasks.filter(
+      (task) => task.status === 'completed',
+    );
+
+    const status = Math.round(
+      (thisGoalCompletedTasks.length / thisGoalTasks.length) * 100,
+    );
+
+    return await this.prisma.goal.update({
+      where: { id },
+      data: { status },
+    });
+  }
+
   async update(goal: Goal) {
     return await this.prisma.goal.update({
       where: { id: goal.id },

@@ -26,15 +26,15 @@ export class TaskService {
     });
   }
 
-  async findByUserId(id: string): Promise<Task[]> {
+  async findByUserId(userId: string): Promise<Task[]> {
     return await this.prisma.task.findMany({
-      where: { userId: id },
+      where: { userId },
     });
   }
 
-  async findByGoalId(id: string): Promise<Task[]> {
+  async findByGoalId(goalId: string): Promise<Task[]> {
     return await this.prisma.task.findMany({
-      where: { goalId: id },
+      where: { goalId },
     });
   }
 

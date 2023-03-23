@@ -1,13 +1,16 @@
 import { Injectable } from '@nestjs/common';
-import { Task } from '@prisma/client';
+import { Goal, Task } from '@prisma/client';
 import AddMoreInfoToTaskButton from '../Buttons/AddMoreInfoToTask.button';
 import AssignTaskToMeButton from '../Buttons/AssignTaskToMe.button';
 import CompleteTaskButtonButton from '../Buttons/CompleteTaskButton.button';
+import DeleteGoalButton from '../Buttons/DeleteGoalButton';
 import DeleteTaskButton from '../Buttons/DeleteTaskButton';
+import EditGoalButton from '../Buttons/EditGoal.button';
 import EditTaskButton from '../Buttons/EditTask.button';
 import UnassignTaskButton from '../Buttons/UnassignTask.button';
 import _ButtonRow from '../Buttons/_ButtonRow';
 import { EmbedGeneratorService } from '../EmbedGenerator.service';
+import { StatusColorPicker } from '../StatusColorPicker.service';
 
 @Injectable()
 export class MessageGeneratorService extends EmbedGeneratorService {
@@ -69,5 +72,29 @@ export class MessageGeneratorService extends EmbedGeneratorService {
         ],
       });
     }
+  }
+
+  public async generateGoalMessage([interaction]: any, goal: Goal) {
+    await interaction.channel.send({
+      content: `**Goal:** ${goal.title}\n\n${StatusColorPicker.getGoalEmoji(
+        goal.status,
+      )}\n\n`,
+      embeds: [await this.generate(goal)],
+      components: [
+        _ButtonRow([EditGoalButton(goal.id), DeleteGoalButton(goal.id)]),
+      ],
+    });
+  }
+
+  public async editGoalMessage([interaction]: any, goal: Goal) {
+    await interaction.message.edit({
+      content: `**Goal:** ${goal.title}\n\n${StatusColorPicker.getGoalEmoji(
+        goal.status,
+      )}\n\n`,
+      embeds: [await this.generate(goal)],
+      components: [
+        _ButtonRow([EditGoalButton(goal.id), DeleteGoalButton(goal.id)]),
+      ],
+    });
   }
 }

@@ -162,7 +162,7 @@ export class MessageComponentHandlersService {
 
   @Button('CreateTask')
   async createTaskButtonHandler(@Context() [interaction]: ButtonContext) {
-    interaction.showModal(CreateTaskModal());
+    return interaction.showModal(CreateTaskModal());
   }
 
   @Button('CreateGoal')
@@ -191,6 +191,8 @@ export class MessageComponentHandlersService {
   ) {
     const goal = await this.goalService.findById(goalId);
 
+    await this.goalService.updateStatus(goalId);
+
     this.logger.log(
       `${goal.title} EditGoal button pressed by ${interaction.user.username}`,
     );
@@ -211,6 +213,25 @@ export class MessageComponentHandlersService {
 
     return interaction.reply({
       content: `Goal ${goal.title} deleted`,
+      ephemeral: true,
+    });
+  }
+
+  @Button('UpdateGoalStatus/:value')
+  async updateGoalStatusButtonHandler(
+    @Context() [interaction]: ButtonContext,
+    @ComponentParam('value') goalId: string,
+  ) {
+    const goal = await this.goalService.updateStatus(goalId);
+
+    this.logger.log(
+      `${goal.title} UpdateGoalStatus button pressed by ${interaction.user.username}`,
+    );
+
+    await this.messageGeneratorService.editGoalMessage([interaction], goal);
+
+    return interaction.reply({
+      content: `Goal ${goal.title} status updated`,
       ephemeral: true,
     });
   }
@@ -253,11 +274,14 @@ export class MessageComponentHandlersService {
     this.logger.log(
       taskId + ' assigned to a goal by ' + interaction.user.username,
     );
+
     const goalId = interaction.values[0];
     const assignedTask = await this.taskService.assignTaskToGoal(
       taskId,
       goalId,
     );
+
+    await this.goalService.updateStatus(goalId);
 
     await this.messageGeneratorService.editTaskMessage(
       [interaction],
