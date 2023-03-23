@@ -22,7 +22,9 @@ export class DashboardSenderService extends EmbedGeneratorService {
     await ChannelWiper([interaction]);
 
     const goals = await this.goalService.findAll();
-    const tasks = await this.taskService.findAll();
+    const tasks = (await this.taskService.findAll()).filter(
+      (task) => task.status !== 'completed',
+    );
 
     await interaction.channel.setName(`dashboard`);
 

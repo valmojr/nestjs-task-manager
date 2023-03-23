@@ -46,7 +46,7 @@ export class DashboardCommandService {
 
     interaction.channel.setName('dashboard');
 
-    new CronService('0 */10 14-22 * * *', async () => {
+    new CronService('0 0 14-22/2 * * *', async () => {
       this.logger.log(`Updating Dashboard at ${new Date().toISOString()}`);
 
       await this.dashboardSenderService.overview([interaction]);

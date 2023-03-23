@@ -8,6 +8,7 @@ import DeleteTaskButton from '../Buttons/DeleteTaskButton';
 import EditGoalButton from '../Buttons/EditGoal.button';
 import EditTaskButton from '../Buttons/EditTask.button';
 import UnassignTaskButton from '../Buttons/UnassignTask.button';
+import UpdateGoalStatusButton from '../Buttons/UpdateGoalStatus.button';
 import _ButtonRow from '../Buttons/_ButtonRow';
 import { EmbedGeneratorService } from '../EmbedGenerator.service';
 import { StatusColorPicker } from '../StatusColorPicker.service';
@@ -78,10 +79,14 @@ export class MessageGeneratorService extends EmbedGeneratorService {
     await interaction.channel.send({
       content: `**Goal:** ${goal.title}\n\n${StatusColorPicker.getGoalEmoji(
         goal.status,
-      )}\n\n`,
+      )} - ${goal.status}%\n\n`,
       embeds: [await this.generate(goal)],
       components: [
-        _ButtonRow([EditGoalButton(goal.id), DeleteGoalButton(goal.id)]),
+        _ButtonRow([
+          UpdateGoalStatusButton(goal.id),
+          EditGoalButton(goal.id),
+          DeleteGoalButton(goal.id),
+        ]),
       ],
     });
   }
@@ -93,7 +98,11 @@ export class MessageGeneratorService extends EmbedGeneratorService {
       )}\n\n`,
       embeds: [await this.generate(goal)],
       components: [
-        _ButtonRow([EditGoalButton(goal.id), DeleteGoalButton(goal.id)]),
+        _ButtonRow([
+          UpdateGoalStatusButton(goal.id),
+          EditGoalButton(goal.id),
+          DeleteGoalButton(goal.id),
+        ]),
       ],
     });
   }
