@@ -1,4 +1,3 @@
-import { EmbedBuilder } from 'discord.js';
 import { Injectable, Logger } from '@nestjs/common';
 import { Context, SlashCommand, SlashCommandContext } from 'necord';
 import { GoalService } from 'src/goal/goal.service';
@@ -23,7 +22,7 @@ export class CheckGoalsCommand {
     const goals = await this.goalService.findAll();
     const tasks = await this.taskService.findAll();
 
-    const embedGoals = await Promise.all(
+    const embeds = await Promise.all(
       goals.map(async (goal) => {
         const goalTasks = tasks.filter((task) => task.goalId === goal.id);
         const embedGoal = await this.embedGeneratorService.generate(goal);
@@ -38,9 +37,9 @@ export class CheckGoalsCommand {
 
     this.logger.log(`${interaction.user.username} checked the goals`);
 
-    if (embedGoals.length > 0) {
+    if (embeds.length > 0) {
       return await interaction.reply({
-        embeds: [...embedGoals],
+        embeds,
         ephemeral: true,
       });
     } else {

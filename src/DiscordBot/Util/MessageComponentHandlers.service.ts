@@ -57,10 +57,7 @@ export class MessageComponentHandlersService {
 
     await this.messageGeneratorService.editTaskMessage([interaction], task);
 
-    return interaction.reply({
-      content: `Task ${task.title} assigned to you`,
-      ephemeral: true,
-    });
+    return interaction.update({});
   }
 
   @Button('CompleteTask/:taskId')
@@ -76,10 +73,7 @@ export class MessageComponentHandlersService {
 
     await this.messageGeneratorService.editTaskMessage([interaction], task);
 
-    return interaction.reply({
-      content: `Task ${task.title} completed`,
-      ephemeral: true,
-    });
+    return interaction.update({});
   }
 
   @Button('UnassignTask/:taskId')
@@ -93,10 +87,7 @@ export class MessageComponentHandlersService {
 
     await this.messageGeneratorService.editTaskMessage([interaction], task);
 
-    return interaction.reply({
-      content: `Task ${task.title} unassigned`,
-      ephemeral: true,
-    });
+    return interaction.update({});
   }
 
   @Button('DeleteTask/:taskId')
@@ -106,14 +97,13 @@ export class MessageComponentHandlersService {
   ) {
     const task = await this.taskService.removeById(taskId);
 
-    this.logger.log(`Task ${task.title} deleted`);
+    this.logger.log(
+      `Task ${task.title} deleted by ${interaction.user.username}`,
+    );
 
     await interaction.message.delete();
 
-    return interaction.reply({
-      content: `Task ${task.title} deleted`,
-      ephemeral: true,
-    });
+    return interaction.update({});
   }
 
   @Button('AddMoreInfoToTask/:value')
@@ -211,10 +201,7 @@ export class MessageComponentHandlersService {
       `${goal.title} DeleteGoal button pressed by ${interaction.user.username}`,
     );
 
-    return interaction.reply({
-      content: `Goal ${goal.title} deleted`,
-      ephemeral: true,
-    });
+    return interaction.update({});
   }
 
   @Button('UpdateGoalStatus/:value')
@@ -230,10 +217,7 @@ export class MessageComponentHandlersService {
 
     await this.messageGeneratorService.editGoalMessage([interaction], goal);
 
-    return interaction.reply({
-      content: `Goal ${goal.title} status updated`,
-      ephemeral: true,
-    });
+    return interaction.update({});
   }
 
   @UserSelect('assignTaskToUser/:value')
@@ -255,15 +239,9 @@ export class MessageComponentHandlersService {
       userId,
     );
 
-    await this.messageGeneratorService.editTaskMessage(
-      [interaction],
-      assignedTask,
-    );
+    await this.messageGeneratorService.createTaskEmbed(assignedTask);
 
-    return interaction.reply({
-      content: `Task ${assignedTask.title} assigned to <@${userId}>`,
-      ephemeral: true,
-    });
+    return interaction.update({});
   }
 
   @StringSelect('assignTaskToGoal/:value')
@@ -283,14 +261,8 @@ export class MessageComponentHandlersService {
 
     await this.goalService.updateStatus(goalId);
 
-    await this.messageGeneratorService.editTaskMessage(
-      [interaction],
-      assignedTask,
-    );
+    await this.messageGeneratorService.createTaskEmbed(assignedTask);
 
-    return interaction.reply({
-      content: `Task ${assignedTask.title} has been assigned to a goal`,
-      ephemeral: true,
-    });
+    return interaction.update({});
   }
 }

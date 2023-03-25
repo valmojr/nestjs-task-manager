@@ -10,6 +10,7 @@ import { CronService } from 'src/DiscordBot/Cron.service';
 import DashboardConfirmButton from 'src/DiscordBot/Util/Buttons/DashboardConfirm.button';
 import DashboardDenyButton from 'src/DiscordBot/Util/Buttons/DashboardDeny.button';
 import _ButtonRow from 'src/DiscordBot/Util/Buttons/_ButtonRow';
+import ChannelWiper from 'src/DiscordBot/Util/ChannelWiper';
 import { DashboardSenderService } from './DashboardSender.service';
 
 @Injectable()
@@ -46,8 +47,23 @@ export class DashboardCommandService {
 
     interaction.channel.setName('dashboard');
 
-    new CronService('0 0 14-22/2 * * *', async () => {
-      this.logger.log(`Updating Dashboard at ${new Date().toISOString()}`);
+    // Monday - Friday
+    new CronService('0 0 16-22 * * 1-5', async () => {
+      this.logger.log(`Updating Dashboard at ${new Date()}`);
+
+      await this.dashboardSenderService.overview([interaction]);
+    });
+
+    // Saturday
+    new CronService('0 0 11-22 * * 6', async () => {
+      this.logger.log(`Updating Dashboard at ${new Date()}`);
+
+      await this.dashboardSenderService.overview([interaction]);
+    });
+
+    // Sunday
+    new CronService('0 0 11-22 * * 0', async () => {
+      this.logger.log(`Updating Dashboard at ${new Date()}`);
 
       await this.dashboardSenderService.overview([interaction]);
     });
@@ -64,8 +80,23 @@ export class DashboardCommandService {
       `Dashboard command denied by ${interaction.user.username} in ${interaction.guild.name} - ${interaction.channel.name}`,
     );
 
+    return interaction.update({});
+  }
+
+  @SlashCommand({
+    name: 'dashboard-once',
+    description:
+      'Create a dashboard for your goals and tasks in a channel once',
+  })
+  async dashboardOnce(@Context() [interaction]: SlashCommandContext) {
+    this.logger.log(
+      `Dashboard command called by ${interaction.user.username} in ${interaction.guild.name} - ${interaction.channel.name}`,
+    );
+
+    await this.dashboardSenderService.overview([interaction]);
+
     return interaction.reply({
-      content: `Dashboard creation cancelled.`,
+      content: `Dashboard created in this channel.`,
       ephemeral: true,
     });
   }

@@ -66,9 +66,12 @@ export class GoalService {
       (task) => task.status === 'completed',
     );
 
-    const status = Math.round(
-      (thisGoalCompletedTasks.length / thisGoalTasks.length) * 100,
-    );
+    const status =
+      !thisGoalCompletedTasks.length || !thisGoalTasks.length
+        ? 0
+        : Math.round(
+            (thisGoalCompletedTasks.length / thisGoalTasks.length) * 100,
+          );
 
     return await this.prisma.goal.update({
       where: { id },

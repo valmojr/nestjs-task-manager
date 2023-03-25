@@ -95,7 +95,7 @@ export class MessageGeneratorService extends EmbedGeneratorService {
     await interaction.message.edit({
       content: `**Goal:** ${goal.title}\n\n${StatusColorPicker.getGoalEmoji(
         goal.status,
-      )}\n\n`,
+      )} - ${goal.status}%\n\n`,
       embeds: [await this.generate(goal)],
       components: [
         _ButtonRow([

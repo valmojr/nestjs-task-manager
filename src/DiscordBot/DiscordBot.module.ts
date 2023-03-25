@@ -13,6 +13,7 @@ import { UserCommandsModule } from './Commands/User/UserCommands.module';
 import { DiscordBotService } from './DiscordBot.service';
 import { DiscordBotConfigService } from './DiscordBotConfig.service';
 import { EmbedGeneratorService } from './Util/EmbedGenerator.service';
+import { DiscordLoggerService } from './Util/Logger/Logger.service';
 import { MessageComponentHandlersService } from './Util/MessageComponentHandlers.service';
 import { MessageGeneratorService } from './Util/Messanger/MessageGenerator.service';
 import { ModalHandlersService } from './Util/ModalHandlers.service';
@@ -39,6 +40,7 @@ import { ModalHandlersService } from './Util/ModalHandlers.service';
     MessageGeneratorService,
     DashboardCommandService,
     DashboardSenderService,
+    DiscordLoggerService,
   ],
 })
 export class DiscordBotModule {}
