@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Goal, Task } from '@prisma/client';
 import AddMoreInfoToTaskButton from '../Buttons/AddMoreInfoToTask.button';
 import AssignTaskToMeButton from '../Buttons/AssignTaskToMe.button';
+import CheckTasksButton from '../Buttons/CheckTasks.button';
 import CompleteTaskButtonButton from '../Buttons/CompleteTaskButton.button';
 import DeleteGoalButton from '../Buttons/DeleteGoalButton';
 import DeleteTaskButton from '../Buttons/DeleteTaskButton';
@@ -79,7 +80,7 @@ export class MessageGeneratorService extends EmbedGeneratorService {
     await interaction.channel.send({
       content: `**Goal:** ${goal.title}\n\n${StatusColorPicker.getGoalEmoji(
         goal.status,
-      )} - ${goal.status}%\n\n`,
+      )}`,
       embeds: [await this.generate(goal)],
       components: [
         _ButtonRow([
@@ -95,12 +96,13 @@ export class MessageGeneratorService extends EmbedGeneratorService {
     await interaction.message.edit({
       content: `**Goal:** ${goal.title}\n\n${StatusColorPicker.getGoalEmoji(
         goal.status,
-      )} - ${goal.status}%\n\n`,
+      )}`,
       embeds: [await this.generate(goal)],
       components: [
         _ButtonRow([
           UpdateGoalStatusButton(goal.id),
           EditGoalButton(goal.id),
+          CheckTasksButton(goal.id),
           DeleteGoalButton(goal.id),
         ]),
       ],

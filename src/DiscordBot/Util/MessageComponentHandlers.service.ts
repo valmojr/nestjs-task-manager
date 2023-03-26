@@ -155,6 +155,34 @@ export class MessageComponentHandlersService {
     return interaction.showModal(CreateTaskModal());
   }
 
+  @Button('CheckMissingGoalTasks/:value')
+  async checkMissingGoalTasksButtonHandler(
+    @Context() [interaction]: ButtonContext,
+    @ComponentParam('value') goalId: string,
+  ) {
+    const goal = await this.goalService.findById(goalId);
+    const goalTasks = await this.taskService.findByGoalId(goalId);
+
+    const missingTasks = [];
+    goalTasks.map((task) => {
+      if (task.status !== 'completed') {
+        missingTasks.push(task);
+      }
+    });
+
+    const embedMissingTasks = await Promise.all(
+      missingTasks.map((task) =>
+        this.messageGeneratorService.createTaskEmbed(task),
+      ),
+    );
+
+    return interaction.reply({
+      content: `Missing tasks for ${goal.title}: ${missingTasks.length}`,
+      embeds: embedMissingTasks,
+      ephemeral: true,
+    });
+  }
+
   @Button('CreateGoal')
   async createGoalButtonHandler(@Context() [interaction]: ButtonContext) {
     interaction.showModal(CreateGoalModal());
