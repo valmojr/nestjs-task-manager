@@ -5,4 +5,4 @@ export default (taskId: string) =>
     .setCustomId(`EditGoal/${taskId}`)
     .setLabel('Edit')
     .setEmoji('✏️')
-    .setStyle(ButtonStyle.Secondary);
+    .setStyle(ButtonStyle.Primary);

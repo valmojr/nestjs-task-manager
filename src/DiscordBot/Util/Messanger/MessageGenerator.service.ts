@@ -86,6 +86,7 @@ export class MessageGeneratorService extends EmbedGeneratorService {
         _ButtonRow([
           UpdateGoalStatusButton(goal.id),
           EditGoalButton(goal.id),
+          CheckTasksButton(goal.id),
           DeleteGoalButton(goal.id),
         ]),
       ],
