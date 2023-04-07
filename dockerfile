@@ -1,4 +1,6 @@
-FROM node:19-alpine3.16
+FROM node
+
+ENV DATABASE_URL mongodb://localhost:27017/collabore
 
 WORKDIR /app
 
