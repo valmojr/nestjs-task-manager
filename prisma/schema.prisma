@@ -1,0 +1,54 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model Guild {
+  id                 String     @id @default(auto()) @map("_id") @db.ObjectId
+  discordId          String
+  name               String?
+  avatar             String?
+  dashboardChannelId String?    @db.ObjectId
+  userIDs            String[]   @db.ObjectId
+  users              User[]     @relation(fields: [userIDs], references: [id])
+  tasks              Task[]
+  Reminder           Reminder[]
+}
+
+model User {
+  id       String   @id @default(auto()) @map("_id") @db.ObjectId
+  name     String?
+  avatar   String?
+  guildIDs String[] @db.ObjectId
+  guilds   Guild[]  @relation(fields: [guildIDs], references: [id])
+  taskIDs  String[] @db.ObjectId
+  tasks    Task[]   @relation(fields: [taskIDs], references: [id])
+}
+
+model Task {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  title        String?
+  description  String?
+  image        String?
+  status       Int      @default(0)
+  level        Int      @default(1)
+  guildId      String   @db.ObjectId
+  guild        Guild    @relation(fields: [id], references: [id])
+  fatherTaskId String?  @db.ObjectId
+  fatherTask   Task?    @relation("fatherTaskChildTasks", fields: [fatherTaskId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  childTasks   Task[]   @relation("fatherTaskChildTasks")
+  userIDs      String[] @db.ObjectId
+  users        User[]   @relation(fields: [userIDs], references: [id])
+}
+
+model Reminder {
+  id        String  @id @default(auto()) @map("_id") @db.ObjectId
+  title     String?
+  recurring String
+  guildId   String  @db.ObjectId
+  guild     Guild   @relation(fields: [id], references: [id])
+}
