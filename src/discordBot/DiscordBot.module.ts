@@ -3,10 +3,11 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { NecordModule } from 'necord';
 import { DiscordBotService } from './DiscordBot.service';
 import { DiscordBotConfigService } from './DiscordBotConfig.service';
-import { TaskModule } from 'src/task/task.module';
-import { GuildModule } from 'src/guild/guild.module';
-import { ReminderModule } from 'src/reminder/reminder.module';
-import { UserModule } from 'src/user/user.module';
+import { PrismaService } from 'src/Database/Database.service';
+import { TaskService } from 'src/task/task.service';
+import { ReminderService } from 'src/reminder/reminder.service';
+import { UserService } from 'src/user/user.service';
+import { GuildService } from 'src/guild/guild.service';
 
 @Module({
   imports: [
@@ -14,11 +15,14 @@ import { UserModule } from 'src/user/user.module';
     NecordModule.forRootAsync({
       useClass: DiscordBotConfigService,
     }),
-    GuildModule,
-    ReminderModule,
-    TaskModule,
-    UserModule,
   ],
-  providers: [DiscordBotService],
+  providers: [
+    DiscordBotService,
+    PrismaService,
+    TaskService,
+    ReminderService,
+    UserService,
+    GuildService,
+  ],
 })
 export class DiscordBotModule {}
