@@ -21,6 +21,23 @@ export class UserService {
     });
   }
 
+  findOrCreate(data: User) {
+    this.logger.log(
+      `User service finding or creating user with data: ${JSON.stringify(
+        data,
+      )}`,
+    );
+
+    return this.prismaService.user.upsert({
+      create: {
+        ...data,
+        id: randomUUID(),
+      },
+      update: data,
+      where: { id: data.id },
+    });
+  }
+
   findAll() {
     this.logger.log('User service finding all users');
 
