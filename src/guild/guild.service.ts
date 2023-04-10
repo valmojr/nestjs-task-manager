@@ -1,6 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Guild } from '@prisma/client';
-import { randomUUID } from 'crypto';
 import { PrismaService } from 'src/Database/Database.service';
 
 @Injectable()
@@ -43,6 +42,29 @@ export class GuildService {
       where: { id },
       data,
     });
+  }
+
+  update(data: Guild) {
+    this.logger.log(`Updating guild with data: ${JSON.stringify(data)}`);
+
+    return this.prismaService.guild.update({
+      where: { id: data.id },
+      data,
+    });
+  }
+
+  async checkOrAddUserToGuild(userId: string, guildId: string) {
+    const guild = await this.prismaService.guild.findUnique({
+      where: { id: guildId },
+    });
+
+    if (!guild.userIDs.includes(userId)) {
+      guild.userIDs.push(userId);
+
+      return this.update(guild);
+    } else {
+      return guild;
+    }
   }
 
   removeById(id: string) {

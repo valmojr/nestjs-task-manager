@@ -9,7 +9,7 @@ datasource db {
 
 model Guild {
   id                 String     @id @default(auto()) @map("_id") @db.ObjectId
-  discordId          String
+  discordId          String     @unique
   name               String?
   avatar             String?
   dashboardChannelId String?    @db.ObjectId
@@ -20,13 +20,14 @@ model Guild {
 }
 
 model User {
-  id       String   @id @default(auto()) @map("_id") @db.ObjectId
-  name     String?
-  avatar   String?
-  guildIDs String[] @db.ObjectId
-  guilds   Guild[]  @relation(fields: [guildIDs], references: [id])
-  taskIDs  String[] @db.ObjectId
-  tasks    Task[]   @relation(fields: [taskIDs], references: [id])
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  discordId String   @unique
+  name      String?
+  avatar    String?
+  guildIDs  String[] @db.ObjectId
+  guilds    Guild[]  @relation(fields: [guildIDs], references: [id])
+  taskIDs   String[] @db.ObjectId
+  tasks     Task[]   @relation(fields: [taskIDs], references: [id])
 }
 
 model Task {

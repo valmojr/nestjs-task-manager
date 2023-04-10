@@ -8,7 +8,7 @@ export class UserService {
   constructor(private readonly prismaService: PrismaService) {}
   private readonly logger: Logger = new Logger(UserService.name);
 
-  create(data: User) {
+  async create(data: Omit<User, 'id'>) {
     this.logger.log(
       `User service creating user with data: ${JSON.stringify(data)}`,
     );
@@ -21,36 +21,54 @@ export class UserService {
     });
   }
 
-  findOrCreate(data: User) {
+  async findOrCreate(data: Omit<User, 'id'>) {
     this.logger.log(
       `User service finding or creating user with data: ${JSON.stringify(
         data,
       )}`,
     );
 
-    return this.prismaService.user.upsert({
-      create: {
-        ...data,
-        id: randomUUID(),
-      },
-      update: data,
-      where: { id: data.id },
+    const { discordId } = data;
+
+    const user = await this.prismaService.user.findUnique({
+      where: { discordId },
     });
+
+    if (user) {
+      return user;
+    } else {
+      return this.prismaService.user.create({
+        data: {
+          ...data,
+          id: randomUUID(),
+        },
+      });
+    }
   }
 
-  findAll() {
+  async findAll() {
     this.logger.log('User service finding all users');
 
     return this.prismaService.user.findMany();
   }
 
-  findOne(id: string) {
+  async findOne(id: string) {
     this.logger.log(`User service finding user with id: ${id}`);
 
     return `This action returns a #${id} user`;
   }
 
-  update(id: string, data: User) {
+  async findByDiscordId(discordId: string) {
+    this.logger.log(`User service finding user with discordId: ${discordId}`);
+
+    const user = await this.prismaService.user.findUnique({
+      where: { discordId },
+    });
+
+    user ? user : null;
+  }
+
+  async updateById(id: string, data: User) {
     this.logger.log(
       `User service updating user with id: ${id} and data: ${JSON.stringify(
         data,
@@ -60,7 +78,7 @@ export class UserService {
     return this.prismaService.user.update({ where: { id }, data });
   }
 
-  remove(id: string) {
+  async removeById(id: string) {
     this.logger.log(`User service removing user with id: ${id}`);
 
     return this.prismaService.user.delete({ where: { id } });

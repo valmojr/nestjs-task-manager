@@ -45,13 +45,13 @@ export class UserController {
       User Controller updating user with id: ${id} and data: ${user}
     `);
 
-    return this.userService.update(id, user);
+    return this.userService.updateById(id, user);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
     this.logger.log(`User Controller removing user with id: ${id}`);
 
-    return this.userService.remove(id);
+    return this.userService.removeById(id);
   }
 }

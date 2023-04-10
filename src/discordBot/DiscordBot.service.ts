@@ -8,7 +8,10 @@ import { UserService } from 'src/user/user.service';
 
 @Injectable()
 export class DiscordBotService {
-  constructor() {
+  constructor(
+    private readonly guildService: GuildService,
+    private readonly userService: UserService,
+  ) {
     dotenv.config();
   }
 
@@ -34,22 +37,6 @@ export class DiscordBotService {
     @Context() [joinedGuild]: ContextOf<'guildCreate'>,
   ) {
     this.logger.log(`Bot added to guild ${joinedGuild.name}`);
-    let guildService: GuildService;
-    let userService: UserService;
-
-    const guildMembers: User[] = joinedGuild.members.cache.map((member) => {
-      return {
-        id: member.id,
-        name: member.user.username,
-        avatar: member.user.avatarURL(),
-        guildIDs: [joinedGuild.id],
-        taskIDs: [],
-      };
-    });
-
-    guildMembers.forEach((member) => {
-      userService.findOrCreate(member);
-    });
 
     const guild: Guild = {
       id: randomUUID(),
@@ -57,9 +44,24 @@ export class DiscordBotService {
       name: joinedGuild.name,
       avatar: joinedGuild.iconURL(),
       dashboardChannelId: null,
-      userIDs: guildMembers.map((member) => member.id),
+      userIDs: [],
     };
 
-    guildService.create(guild);
+    this.guildService.create(guild);
+
+    joinedGuild.members.cache.forEach(async (member) => {
+      this.guildService.checkOrAddUserToGuild(member.id, joinedGuild.id);
+
+      const user: User = {
+        id: randomUUID(),
+        discordId: member.id,
+        name: member.user.username,
+        avatar: member.user.avatarURL(),
+        guildIDs: [],
+        taskIDs: [],
+      };
+
+      this.userService.findOrCreate(user);
+    });
   }
 }
