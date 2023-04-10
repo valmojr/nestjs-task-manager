@@ -43,9 +43,9 @@ export class UserService {
 
     const { discordId } = data;
 
-    const user: User = await this.prismaService.user.findMany({
+    const user: User = await this.prismaService.user.findFirst({
       where: { discordId },
-    })[0];
+    });
 
     if (user) {
       return user;
@@ -53,6 +53,7 @@ export class UserService {
       return this.prismaService.user.create({
         data: {
           ...data,
+          id: randomUUID(),
         },
       });
     }

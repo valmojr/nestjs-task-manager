@@ -1,8 +1,8 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { Once, Context, ContextOf, On } from 'necord';
 import * as dotenv from 'dotenv';
 import { GuildService } from 'src/guild/guild.service';
-import { Guild, User } from '@prisma/client';
+import { User } from '@prisma/client';
 import { randomUUID } from 'crypto';
 import { UserService } from 'src/user/user.service';
 
@@ -33,35 +33,53 @@ export class DiscordBotService {
   }
 
   @On('guildCreate')
-  public async onGuildMemberAdd(
-    @Context() [joinedGuild]: ContextOf<'guildCreate'>,
-  ) {
+  public async onGuildAdd(@Context() [joinedGuild]: ContextOf<'guildCreate'>) {
     this.logger.log(`Bot added to guild ${joinedGuild.name}`);
 
-    const guild: Guild = {
-      id: randomUUID(),
+    const rawUsers = await joinedGuild.members.fetch();
+
+    const users: Omit<User, 'guildIDs' | 'taskIDs' | 'id'>[] = rawUsers.map(
+      (rawUser) => {
+        const { id, username, avatar } = rawUser.user;
+
+        return {
+          discordId: id,
+          name: username,
+          avatar,
+        };
+      },
+    );
+
+    users.forEach(async (user) => {
+      const userOnDatabase = await this.userService.findByDiscordId(
+        user.discordId,
+      );
+
+      if (userOnDatabase) {
+        if (userOnDatabase.guildIDs.includes(joinedGuild.id)) {
+          throw new BadRequestException('User is already on guild');
+        } else {
+          await this.userService.updateById(userOnDatabase.id, {
+            ...userOnDatabase,
+            guildIDs: [...userOnDatabase.guildIDs, guild.discordId],
+          });
+        }
+      } else {
+        await this.userService.create({
+          ...user,
+          guildIDs: [joinedGuild.id],
+          taskIDs: [],
+        });
+      }
+    });
+
+    const guild = await this.guildService.create({
       discordId: joinedGuild.id,
       name: joinedGuild.name,
       avatar: joinedGuild.iconURL(),
       dashboardChannelId: null,
-      userIDs: [],
-    };
-
-    this.guildService.create(guild);
-
-    joinedGuild.members.cache.forEach(async (member) => {
-      this.guildService.checkOrAddUserToGuild(member.id, joinedGuild.id);
-
-      const user: User = {
-        id: randomUUID(),
-        discordId: member.id,
-        name: member.user.username,
-        avatar: member.user.avatarURL(),
-        guildIDs: [],
-        taskIDs: [],
-      };
-
-      this.userService.findOrCreate(user);
+      userIDs: users.map((user) => user.discordId),
+      id: randomUUID(),
     });
   }
 }
