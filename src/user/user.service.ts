@@ -13,29 +13,17 @@ export class UserService {
       `User service creating user with data: ${JSON.stringify(data)}`,
     );
 
-    return this.prismaService.user.create({
-      data: {
-        ...data,
-        id: randomUUID(),
-      },
-    });
-  }
-
-  async findOrCreate(data: Omit<User, 'id'>) {
-    this.logger.log(
-      `User service finding or creating user with data: ${JSON.stringify(
-        data,
-      )}`,
-    );
-
     const { discordId } = data;
 
-    const user = await this.prismaService.user.findUnique({
+    const user = await this.prismaService.user.findMany({
       where: { discordId },
-    });
+    })[0];
 
     if (user) {
-      return user;
+      return this.prismaService.user.update({
+        where: { discordId },
+        data,
+      });
     } else {
       return this.prismaService.user.create({
         data: {
@@ -46,29 +34,53 @@ export class UserService {
     }
   }
 
-  async findAll() {
+  async findOrCreate(data: Omit<User, 'id'>): Promise<User> {
+    this.logger.log(
+      `User service finding or creating user with data: ${JSON.stringify(
+        data,
+      )}`,
+    );
+
+    const { discordId } = data;
+
+    const user: User = await this.prismaService.user.findMany({
+      where: { discordId },
+    })[0];
+
+    if (user) {
+      return user;
+    } else {
+      return this.prismaService.user.create({
+        data: {
+          ...data,
+        },
+      });
+    }
+  }
+
+  async findAll(): Promise<User[]> {
     this.logger.log('User service finding all users');
 
     return this.prismaService.user.findMany();
   }
 
-  async findOne(id: string) {
+  async findById(id: string): Promise<User> {
     this.logger.log(`User service finding user with id: ${id}`);
 
-    return `This action returns a #${id} user`;
+    return this.prismaService.user.findUnique({ where: { id } });
   }
 
-  async findByDiscordId(discordId: string) {
+  async findByDiscordId(discordId: string): Promise<User> {
     this.logger.log(`User service finding user with discordId: ${discordId}`);
 
-    const user = await this.prismaService.user.findUnique({
-      where: { discordId },
-    });
-
-    user ? user : null;
+    return (
+      await this.prismaService.user.findMany({
+        where: { discordId },
+      })
+    )[0];
   }
 
-  async updateById(id: string, data: User) {
+  async updateById(id: string, data: User): Promise<User> {
     this.logger.log(
       `User service updating user with id: ${id} and data: ${JSON.stringify(
         data,
@@ -78,7 +90,7 @@ export class UserService {
     return this.prismaService.user.update({ where: { id }, data });
   }
 
-  async removeById(id: string) {
+  async removeById(id: string): Promise<User> {
     this.logger.log(`User service removing user with id: ${id}`);
 
     return this.prismaService.user.delete({ where: { id } });

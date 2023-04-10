@@ -81,6 +81,21 @@ export class TaskService {
     });
   }
 
+  async findAllNoFatherTasksOfUser(userId: string) {
+    this.logger.log(
+      `Task service finding all no father tasks of user with id: ${userId}`,
+    );
+
+    return this.prismaService.task.findMany({
+      where: {
+        userIDs: {
+          has: userId,
+        },
+        fatherTaskId: null,
+      },
+    });
+  }
+
   async update(id: string, task: Task) {
     this.logger.log(`Task service updating task with id: ${id}`);
 

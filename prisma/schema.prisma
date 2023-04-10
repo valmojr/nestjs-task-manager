@@ -8,30 +8,30 @@ datasource db {
 }
 
 model Guild {
-  id                 String     @id @default(auto()) @map("_id") @db.ObjectId
+  id                 String     @id @map("_id")
   discordId          String     @unique
   name               String?
   avatar             String?
-  dashboardChannelId String?    @db.ObjectId
-  userIDs            String[]   @db.ObjectId
+  dashboardChannelId String?
+  userIDs            String[]
   users              User[]     @relation(fields: [userIDs], references: [id])
   tasks              Task[]
   Reminder           Reminder[]
 }
 
 model User {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  id        String   @id @map("_id")
   discordId String   @unique
   name      String?
   avatar    String?
-  guildIDs  String[] @db.ObjectId
+  guildIDs  String[]
   guilds    Guild[]  @relation(fields: [guildIDs], references: [id])
-  taskIDs   String[] @db.ObjectId
+  taskIDs   String[]
   tasks     Task[]   @relation(fields: [taskIDs], references: [id])
 }
 
 model Task {
-  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  id           String   @id @map("_id")
   title        String?
   description  String?
   image        String?
@@ -39,15 +39,15 @@ model Task {
   level        Int      @default(1)
   guildId      String   @db.ObjectId
   guild        Guild    @relation(fields: [id], references: [id])
-  fatherTaskId String?  @db.ObjectId
+  fatherTaskId String?
   fatherTask   Task?    @relation("fatherTaskChildTasks", fields: [fatherTaskId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   childTasks   Task[]   @relation("fatherTaskChildTasks")
-  userIDs      String[] @db.ObjectId
+  userIDs      String[]
   users        User[]   @relation(fields: [userIDs], references: [id])
 }
 
 model Reminder {
-  id        String  @id @default(auto()) @map("_id") @db.ObjectId
+  id        String  @id @map("_id")
   title     String?
   recurring String
   guildId   String  @db.ObjectId

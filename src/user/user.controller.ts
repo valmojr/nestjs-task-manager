@@ -36,7 +36,7 @@ export class UserController {
   findOne(@Param('id') id: string) {
     this.logger.log(`User Controller finding user with id: ${id}`);
 
-    return this.userService.findOne(id);
+    return this.userService.findById(id);
   }
 
   @Patch(':id')
