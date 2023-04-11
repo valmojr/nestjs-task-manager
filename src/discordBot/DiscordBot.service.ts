@@ -82,4 +82,30 @@ export class DiscordBotService {
       id: randomUUID(),
     });
   }
+
+  @On('guildDelete')
+  public async onGuildRemove(@Context() [leftGuild]: ContextOf<'guildDelete'>) {
+    this.logger.log(`Bot removed from guild ${leftGuild.name}`);
+
+    const guild = await this.guildService.findByDiscordId(leftGuild.id);
+
+    if (!guild) {
+      throw new BadRequestException('Guild not found');
+    }
+
+    await this.guildService.removeById(guild.id);
+
+    const users: User[] = await this.userService.findAll();
+
+    users.forEach(async (user) => {
+      if (user.guildIDs.includes(guild.discordId)) {
+        await this.userService.updateByDiscordId(user.discordId, {
+          ...user,
+          guildIDs: user.guildIDs.filter(
+            (guildId) => guildId !== guild.discordId,
+          ),
+        });
+      }
+    });
+  }
 }

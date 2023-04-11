@@ -1,56 +1,26 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { randomUUID } from 'crypto';
+import { Injectable } from '@nestjs/common';
 import { Context, SlashCommand, SlashCommandContext } from 'necord';
-import { GuildService } from 'src/guild/guild.service';
-import { ReminderService } from 'src/reminder/reminder.service';
-import { TaskService } from 'src/task/task.service';
-import { UserService } from 'src/user/user.service';
+import DashboardConfirmButton from 'src/discordBot/utils/Buttons/DashboardConfirm.button';
+import DashboardDenyButton from 'src/discordBot/utils/Buttons/DashboardDeny.button';
+import _ButtonRow from 'src/discordBot/utils/Buttons/_ButtonRow';
 
 @Injectable()
 export class GenerateDashboardCommandService {
-  constructor(
-    private readonly reminderService: ReminderService,
-    private readonly taskService: TaskService,
-    private readonly userService: UserService,
-    private readonly guildService: GuildService,
-  ) {}
-
-  private logger = new Logger(GenerateDashboardCommandService.name);
-
   @SlashCommand({
     name: 'generate-dashboard',
     description: 'Generate a dashboard for your server',
   })
   async generateDashboard(@Context() [interaction]: SlashCommandContext) {
-    this.logger.log(`Generating dashboard for ${interaction.guild.name}`);
-
-    let guild = await this.guildService.findByDiscordId(
-      interaction.guild.id,
-    )[0];
-
-    if (!guild) {
-      guild = await this.guildService.create({
-        id: randomUUID(),
-        discordId: interaction.guild.id,
-        name: interaction.guild.name,
-        avatar: interaction.guild.iconURL(),
-        dashboardChannelId: null,
-        userIDs: [],
-      });
-    }
-
-    const guildMembers = await interaction.guild.members.fetch();
-
-    guildMembers.forEach(
-      async (member) =>
-        await this.guildService.checkOrAddUserToGuild(member.id, guild.id),
-    );
-
-    await this.guildService.updateById(guild.id, {
-      ...guild,
-      dashboardChannelId: interaction.channel.id,
+    return interaction.reply({
+      content:
+        'This command will generate a new channel and use it as dashboard for your server. Are you sure you want to continue?',
+      components: [
+        _ButtonRow([
+          DashboardConfirmButton(interaction.guild.id),
+          DashboardDenyButton(interaction.guild.id),
+        ]),
+      ],
+      ephemeral: true,
     });
-
-    await interaction.reply('Dashboard generated!');
   }
 }

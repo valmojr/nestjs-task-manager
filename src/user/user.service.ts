@@ -81,14 +81,31 @@ export class UserService {
     )[0];
   }
 
-  async updateById(id: string, data: User): Promise<User> {
+  async updateById(userId: string, user: User): Promise<User> {
+    const { id, ...data } = user;
+
     this.logger.log(
       `User service updating user with id: ${id} and data: ${JSON.stringify(
         data,
       )}`,
     );
 
-    return this.prismaService.user.update({ where: { id }, data });
+    return this.prismaService.user.update({ where: { id: userId }, data });
+  }
+
+  async updateByDiscordId(discordId: string, data: User): Promise<User> {
+    const { id, ...dataWithoutId } = data;
+
+    this.logger.log(
+      `User service updating user with discordId: ${discordId} and data: ${JSON.stringify(
+        { ...dataWithoutId, id },
+      )}`,
+    );
+
+    return this.prismaService.user.update({
+      where: { discordId: data.discordId },
+      data: dataWithoutId,
+    });
   }
 
   async removeById(id: string): Promise<User> {

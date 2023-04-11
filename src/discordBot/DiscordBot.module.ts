@@ -8,6 +8,10 @@ import { TaskService } from 'src/task/task.service';
 import { ReminderService } from 'src/reminder/reminder.service';
 import { UserService } from 'src/user/user.service';
 import { GuildService } from 'src/guild/guild.service';
+import { GenerateDashboardCommandService } from './commands/customization/generateDashboard.command.service';
+import { MessageComponentHandlersService } from './Handlers/MessageComponentsHandlers.service';
+import { ModalHandlersService } from './Handlers/ModalHandlers.service';
+import { CustomizeBotCommandService } from './commands/customization/customizeBot.command.service';
 
 @Module({
   imports: [
@@ -23,6 +27,10 @@ import { GuildService } from 'src/guild/guild.service';
     ReminderService,
     UserService,
     GuildService,
+    MessageComponentHandlersService,
+    ModalHandlersService,
+    CustomizeBotCommandService,
+    GenerateDashboardCommandService,
   ],
 })
 export class DiscordBotModule {}
