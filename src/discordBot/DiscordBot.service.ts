@@ -61,7 +61,7 @@ export class DiscordBotService {
         } else {
           await this.userService.updateById(userOnDatabase.id, {
             ...userOnDatabase,
-            guildIDs: [...userOnDatabase.guildIDs, guild.discordId],
+            guildIDs: [...userOnDatabase.guildIDs, joinedGuild.id],
           });
         }
       } else {

@@ -14,12 +14,4 @@ export default (guildId: string) =>
           .setRequired(false)
           .setStyle(TextInputStyle.Short),
       ]),
-      new ActionRowBuilder<TextInputBuilder>().addComponents([
-        new TextInputBuilder()
-          .setCustomId('discordBotDisplayImageURL')
-          .setLabel('Bot Display Image URL')
-          .setPlaceholder('Image URL')
-          .setRequired(false)
-          .setStyle(TextInputStyle.Short),
-      ]),
     ]);

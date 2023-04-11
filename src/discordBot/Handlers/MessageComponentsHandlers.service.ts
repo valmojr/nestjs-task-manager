@@ -36,7 +36,7 @@ export class MessageComponentHandlersService {
       });
 
       const guild = await this.guildService.setDashboardChannel(
-        guildId,
+        guildOnDatabase.id,
         (
           await dashboardChannel
         ).id,
