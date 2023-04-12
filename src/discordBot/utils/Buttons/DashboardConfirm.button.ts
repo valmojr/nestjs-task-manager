@@ -3,7 +3,7 @@ import { ButtonBuilder, ButtonStyle } from 'discord.js';
 
 export default (guildId: string) =>
   new ButtonBuilder()
-    .setCustomId(`ConfirmDashboard/${guildId}`)
+    .setCustomId(`ConfirmDashboardButton/${guildId}`)
     .setLabel('Confirm')
     .setEmoji('✅')
     .setStyle(ButtonStyle.Success);

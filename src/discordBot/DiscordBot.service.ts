@@ -2,18 +2,17 @@ import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { Once, Context, ContextOf, On } from 'necord';
 import * as dotenv from 'dotenv';
 import { GuildService } from 'src/guild/guild.service';
-import { Guild, Reminder, User } from '@prisma/client';
+import { Guild, User } from '@prisma/client';
 import { randomUUID } from 'crypto';
 import { UserService } from 'src/user/user.service';
-import { ReminderService } from 'src/reminder/reminder.service';
-import { CronService } from './Cron.service';
+import { DashboardHandlerService } from './DashboardHandler.service';
 
 @Injectable()
 export class DiscordBotService {
   constructor(
     private readonly guildService: GuildService,
     private readonly userService: UserService,
-    private readonly reminderService: ReminderService,
+    private readonly dashboardHandlerService: DashboardHandlerService,
   ) {
     dotenv.config();
   }
@@ -24,25 +23,7 @@ export class DiscordBotService {
   public async onReady(@Context() [client]: ContextOf<'ready'>) {
     this.logger.log(`Bot ${client.user.username} logged in and ready!`);
 
-    const reminders = await this.reminderService.findAll();
-
-    reminders.forEach(async (reminder: Reminder) => {
-      new CronService(reminder.recurring, async () => {
-        const guild = await this.guildService.findById(reminder.guildId);
-
-        const guildClient = client.guilds.cache.get(guild.discordId);
-
-        const dashboardChannel = await guildClient.channels.cache.get(
-          guild.dashboardChannelId,
-        );
-
-        if (dashboardChannel) {
-          const channel: any = await dashboardChannel.fetch();
-
-          channel.send(`teste`);
-        }
-      });
-    });
+    this.dashboardHandlerService.run(client);
   }
 
   @On('warn')

@@ -5,6 +5,7 @@ import { ReminderService } from 'src/reminder/reminder.service';
 import { TaskService } from 'src/task/task.service';
 import { UserService } from 'src/user/user.service';
 import { ChannelType } from 'discord-api-types/v9';
+import CreateMasterTaskModal from '../utils/Modal/CreateMasterTask.modal';
 
 @Injectable()
 export class MessageComponentHandlersService {
@@ -17,7 +18,7 @@ export class MessageComponentHandlersService {
 
   private readonly logger = new Logger(MessageComponentHandlersService.name);
 
-  @Button('ConfirmDashboard/:guildId')
+  @Button('ConfirmDashboardButton/:guildId')
   async confirmDashboard(
     @Ctx() [interaction]: ButtonContext,
     @ComponentParam('guildId') guildId: string,
@@ -54,11 +55,18 @@ export class MessageComponentHandlersService {
     }
   }
 
-  @Button('DenyDashboard/:guildId')
+  @Button('DenyDashboardButton/:guildId')
   async denyDashboard(@Ctx() [interaction]: ButtonContext) {
     return await interaction.reply({
       content: 'Dashboard creation canceled',
       ephemeral: true,
     });
+  }
+
+  @Button('CreateMasterTaskButton/:guildId')
+  async createMasterTaskOnGuild(@Ctx() [interaction]: ButtonContext) {
+    return await interaction.showModal(
+      CreateMasterTaskModal(interaction.guild.id),
+    );
   }
 }

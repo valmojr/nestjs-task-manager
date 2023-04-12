@@ -43,25 +43,25 @@ export class TaskService {
     }
   }
 
-  async findAll() {
+  async findAll(): Promise<Task[]> {
     this.logger.log('Task service finding all tasks');
 
     return this.prismaService.task.findMany();
   }
 
-  async findById(id: string) {
+  async findById(id: string): Promise<Task> {
     this.logger.log(`Task service finding task with id: ${id}`);
 
     return this.prismaService.task.findUnique({ where: { id } });
   }
 
-  async findByGuildId(guildId: string) {
+  async findByGuildId(guildId: string): Promise<Task[]> {
     this.logger.log(`Task service finding task with guildId: ${guildId}`);
 
     return this.prismaService.task.findMany({ where: { guildId } });
   }
 
-  async findByFatherTaskId(fatherTaskId: string) {
+  async findByFatherTaskId(fatherTaskId: string): Promise<Task[]> {
     this.logger.log(
       `Task service finding tasks with fatherTaskId: ${fatherTaskId}`,
     );
@@ -69,7 +69,20 @@ export class TaskService {
     return this.prismaService.task.findMany({ where: { fatherTaskId } });
   }
 
-  async findByUserId(userId: string) {
+  async getGuildMasterTasks(guildId: string): Promise<Task[]> {
+    this.logger.log(
+      `Task service finding guild master tasks with guildId: ${guildId}`,
+    );
+
+    return this.prismaService.task.findMany({
+      where: {
+        guildId,
+        level: 0,
+      },
+    });
+  }
+
+  async findByUserId(userId: string): Promise<Task[]> {
     this.logger.log(`Task service finding tasks with userId: ${userId}`);
 
     return this.prismaService.task.findMany({
@@ -81,7 +94,7 @@ export class TaskService {
     });
   }
 
-  async findAllNoFatherTasksOfUser(userId: string) {
+  async findAllNoFatherTasksOfUser(userId: string): Promise<Task[]> {
     this.logger.log(
       `Task service finding all no father tasks of user with id: ${userId}`,
     );
@@ -105,7 +118,26 @@ export class TaskService {
     });
   }
 
-  async remove(id: string) {
+  async updateTaskStatus(id: string): Promise<Task> {
+    const childTasks = await this.findByFatherTaskId(id);
+
+    if (childTasks.length > 0) {
+      const statusSum = childTasks.reduce((acc, task) => {
+        return acc + task.status;
+      }, 0);
+
+      const status = statusSum / childTasks.length;
+
+      const task = await this.findById(id);
+
+      return await this.update(id, {
+        ...task,
+        status,
+      });
+    }
+  }
+
+  async remove(id: string): Promise<Task> {
     this.logger.log(`Task service removing task with id: ${id}`);
 
     return this.prismaService.task.delete({ where: { id } });

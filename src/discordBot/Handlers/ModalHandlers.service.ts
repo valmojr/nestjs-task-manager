@@ -1,11 +1,12 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { Reminder } from '@prisma/client';
+import { Reminder, Task } from '@prisma/client';
 import { randomUUID } from 'crypto';
 import { ComponentParam, Ctx, Modal, ModalContext } from 'necord';
 import { GuildService } from 'src/guild/guild.service';
 import { ReminderService } from 'src/reminder/reminder.service';
 import { TaskService } from 'src/task/task.service';
 import { UserService } from 'src/user/user.service';
+import EmbedTask from '../utils/Embeds/EmbedTask';
 
 @Injectable()
 export class ModalHandlersService {
@@ -83,6 +84,41 @@ export class ModalHandlersService {
     return await interaction.reply({
       content: `Dashboard update frequency set to ${reminder.recurring} in guild ${guildId}`,
       ephemeral: true,
+    });
+  }
+
+  @Modal(`CreateMasterTaskModal/:guildId`)
+  async createMasterTaskModal(@Ctx() [interaction]: ModalContext) {
+    const guild = await this.guildService.findByDiscordId(interaction.guild.id);
+
+    const title = interaction.fields.getTextInputValue('taskTitle');
+    let description = interaction.fields.getTextInputValue('taskDescription');
+    let image = interaction.fields.getTextInputValue('taskImage');
+
+    if (title.length === 0) {
+      throw new Error('Task title cannot be empty');
+    }
+    if (description.length === 0) {
+      description = 'No description provided';
+    }
+    if (image.length === 0) {
+      image = null;
+    }
+
+    const task: Task = await this.taskService.create({
+      id: randomUUID(),
+      title,
+      description,
+      image,
+      level: 0,
+      status: 0,
+      fatherTaskId: null,
+      userIDs: [],
+      guildId: guild.id,
+    });
+
+    return await interaction.reply({
+      embeds: [EmbedTask(task, 0)],
     });
   }
 }
