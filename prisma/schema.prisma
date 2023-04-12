@@ -12,7 +12,7 @@ model Guild {
   discordId          String     @unique
   name               String?
   avatar             String?
-  dashboardChannelId String?
+  dashboardChannelId String?    @unique
   userIDs            String[]
   users              User[]     @relation(fields: [userIDs], references: [id])
   tasks              Task[]
@@ -37,7 +37,7 @@ model Task {
   image        String?
   status       Int      @default(0)
   level        Int      @default(1)
-  guildId      String   @db.ObjectId
+  guildId      String
   guild        Guild    @relation(fields: [id], references: [id])
   fatherTaskId String?
   fatherTask   Task?    @relation("fatherTaskChildTasks", fields: [fatherTaskId], references: [id], onDelete: NoAction, onUpdate: NoAction)
@@ -50,6 +50,6 @@ model Reminder {
   id        String  @id @map("_id")
   title     String?
   recurring String
-  guildId   String  @db.ObjectId
+  guildId   String
   guild     Guild   @relation(fields: [id], references: [id])
 }

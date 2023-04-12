@@ -25,11 +25,11 @@ export class MessageComponentHandlersService {
     const guildOnDatabase = await this.guildService.findByDiscordId(guildId);
 
     if (!guildOnDatabase) {
-      this.logger.warn(
+      this.logger.error(
         `Guild not found while trying to create dashboard channel for guild ${guildId}`,
       );
       throw new Error('Guild not found');
-    } else if (guildOnDatabase.dashboardChannelId) {
+    } else if (!guildOnDatabase.dashboardChannelId) {
       const dashboardChannel = interaction.guild.channels.create({
         name: 'dashboard',
         type: ChannelType.GuildText,
@@ -44,6 +44,11 @@ export class MessageComponentHandlersService {
 
       return await interaction.reply({
         content: `Dashboard channel created: <#${guild.dashboardChannelId}>`,
+        ephemeral: true,
+      });
+    } else {
+      return await interaction.reply({
+        content: `Dashboard channel already exists: <#${guildOnDatabase.dashboardChannelId}>`,
         ephemeral: true,
       });
     }

@@ -39,14 +39,28 @@ export class GuildService {
     return this.prismaService.guild.findUnique({ where: { discordId } });
   }
 
+  async findByDashboardChannelId(dashboardChannelId: string): Promise<Guild> {
+    this.logger.log(
+      `Finding guild with dashboardChannelId: ${dashboardChannelId}`,
+    );
+
+    return (
+      await this.prismaService.guild.findMany({
+        where: { dashboardChannelId },
+      })
+    )[0];
+  }
+
   async updateById(id: string, data: Guild): Promise<Guild> {
     this.logger.log(
       `Updating guild with id: ${id} and data: ${JSON.stringify(data)}`,
     );
 
+    const { id: _, ...updateData } = data;
+
     return this.prismaService.guild.update({
       where: { id },
-      data,
+      data: updateData,
     });
   }
 

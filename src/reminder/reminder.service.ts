@@ -8,7 +8,7 @@ export class ReminderService {
   constructor(private readonly prismaService: PrismaService) {}
   private readonly logger: Logger = new Logger(ReminderService.name);
 
-  create(data: Reminder) {
+  create(data: Reminder | Omit<Reminder, 'id'>) {
     this.logger.log(
       `Reminder Service creating reminder with data: ${JSON.stringify(data)}`,
     );

@@ -2,15 +2,18 @@ import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { Once, Context, ContextOf, On } from 'necord';
 import * as dotenv from 'dotenv';
 import { GuildService } from 'src/guild/guild.service';
-import { User } from '@prisma/client';
+import { Guild, Reminder, User } from '@prisma/client';
 import { randomUUID } from 'crypto';
 import { UserService } from 'src/user/user.service';
+import { ReminderService } from 'src/reminder/reminder.service';
+import { CronService } from './Cron.service';
 
 @Injectable()
 export class DiscordBotService {
   constructor(
     private readonly guildService: GuildService,
     private readonly userService: UserService,
+    private readonly reminderService: ReminderService,
   ) {
     dotenv.config();
   }
@@ -18,12 +21,32 @@ export class DiscordBotService {
   private readonly logger = new Logger(DiscordBotService.name);
 
   @Once('ready')
-  public onReady(@Context() [client]: ContextOf<'ready'>) {
+  public async onReady(@Context() [client]: ContextOf<'ready'>) {
     this.logger.log(`Bot ${client.user.username} logged in and ready!`);
+
+    const reminders = await this.reminderService.findAll();
+
+    reminders.forEach(async (reminder: Reminder) => {
+      new CronService(reminder.recurring, async () => {
+        const guild = await this.guildService.findById(reminder.guildId);
+
+        const guildClient = client.guilds.cache.get(guild.discordId);
+
+        const dashboardChannel = await guildClient.channels.cache.get(
+          guild.dashboardChannelId,
+        );
+
+        if (dashboardChannel) {
+          const channel: any = await dashboardChannel.fetch();
+
+          channel.send(`teste`);
+        }
+      });
+    });
   }
 
   @On('warn')
-  public onWarn(@Context() [message]: ContextOf<'warn'>) {
+  public async onWarn(@Context() [message]: ContextOf<'warn'>) {
     this.logger.warn(message);
   }
 
@@ -36,7 +59,9 @@ export class DiscordBotService {
   public async onGuildAdd(@Context() [joinedGuild]: ContextOf<'guildCreate'>) {
     this.logger.log(`Bot added to guild ${joinedGuild.name}`);
 
-    const rawUsers = await joinedGuild.members.fetch();
+    const rawUsers = (await joinedGuild.members.fetch()).filter(
+      (user) => user.user.bot === false,
+    );
 
     const users: Omit<User, 'guildIDs' | 'taskIDs' | 'id'>[] = rawUsers.map(
       (rawUser) => {
@@ -73,7 +98,7 @@ export class DiscordBotService {
       }
     });
 
-    const guild = await this.guildService.create({
+    await this.guildService.create({
       discordId: joinedGuild.id,
       name: joinedGuild.name,
       avatar: joinedGuild.iconURL(),
@@ -107,5 +132,24 @@ export class DiscordBotService {
         });
       }
     });
+  }
+
+  @On('channelDelete')
+  public async onChannelDelete(
+    @Context() [channel]: ContextOf<'channelDelete'>,
+  ) {
+    const guildDashboardChannel: Guild =
+      await this.guildService.findByDashboardChannelId(channel.id);
+
+    if (guildDashboardChannel) {
+      this.logger.log(
+        `Guild ${guildDashboardChannel.name} deleted dashboard channel`,
+      );
+
+      await this.guildService.updateById(guildDashboardChannel.id, {
+        ...guildDashboardChannel,
+        dashboardChannelId: null,
+      });
+    }
   }
 }

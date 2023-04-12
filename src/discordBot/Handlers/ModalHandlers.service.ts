@@ -15,6 +15,7 @@ export class ModalHandlersService {
     private readonly taskService: TaskService,
     private readonly reminderService: ReminderService,
   ) {}
+
   private logger = new Logger(ModalHandlersService.name);
 
   @Modal(`CustomizeBotModal/:guildId`)
