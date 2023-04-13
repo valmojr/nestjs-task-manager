@@ -6,7 +6,11 @@ import { GuildService } from 'src/guild/guild.service';
 import { ReminderService } from 'src/reminder/reminder.service';
 import { TaskService } from 'src/task/task.service';
 import { UserService } from 'src/user/user.service';
-import EmbedTask from '../utils/Embeds/EmbedTask';
+import EmbedTask from '../utils/MessageGenerators/EmbedTask';
+import _ButtonRow from '../utils/Buttons/_ButtonRow';
+import CompleteTaskButton from '../utils/Buttons/CompleteTask.button';
+import AssignTaskToMeButton from '../utils/Buttons/AssignTaskToMe.button';
+import DeleteTaskButton from '../utils/Buttons/DeleteTask.button';
 
 @Injectable()
 export class ModalHandlersService {
@@ -113,6 +117,55 @@ export class ModalHandlersService {
       level: 0,
       status: 0,
       fatherTaskId: null,
+      userIDs: [],
+      guildId: guild.id,
+    });
+
+    return await interaction.reply({
+      embeds: [EmbedTask(task, 0)],
+      components: [
+        _ButtonRow([
+          CompleteTaskButton(task.id),
+          AssignTaskToMeButton(task.id),
+          DeleteTaskButton(guild.id),
+        ]),
+      ],
+    });
+  }
+
+  @Modal(`CreateChildTaskModal/:fatherTaskId`)
+  async createChildTaskModal(
+    @Ctx() [interaction]: ModalContext,
+    @ComponentParam('fatherTaskId') fatherTaskId: string,
+  ) {
+    const brotherTasksCount = (
+      await this.taskService.findByFatherTaskId(fatherTaskId)
+    ).length;
+
+    const guild = await this.guildService.findByDiscordId(interaction.guild.id);
+
+    const title = interaction.fields.getTextInputValue('taskTitle');
+    let description = interaction.fields.getTextInputValue('taskDescription');
+    let image = interaction.fields.getTextInputValue('taskImage');
+
+    if (title.length === 0) {
+      throw new Error('Task title cannot be empty');
+    }
+    if (description.length === 0) {
+      description = 'No description provided';
+    }
+    if (image.length === 0) {
+      image = null;
+    }
+    console.log('fatherTaskId - ' + fatherTaskId);
+    const task: Task = await this.taskService.create({
+      id: randomUUID(),
+      title,
+      description,
+      image,
+      level: 0,
+      status: 0,
+      fatherTaskId,
       userIDs: [],
       guildId: guild.id,
     });

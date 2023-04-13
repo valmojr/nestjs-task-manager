@@ -28,6 +28,7 @@
     "@prisma/client": "^4.12.0",
     "dotenv": "^16.0.3",
     "necord": "^5.5.4",
+    "path-to-regexp": "^6.2.1",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.2.0"
   },

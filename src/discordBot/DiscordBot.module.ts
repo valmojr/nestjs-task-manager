@@ -13,7 +13,7 @@ import { MessageComponentHandlersService } from './Handlers/MessageComponentsHan
 import { ModalHandlersService } from './Handlers/ModalHandlers.service';
 import { CustomizeBotCommandService } from './commands/customizeBot.command.service';
 import { SetDashboardUpdateFrequencyService } from './commands/setDashboardUpdateFrequency.service';
-import { DashboardHandlerService } from './DashboardHandler.service';
+import { DashboardHandlerService } from './Handlers/DashboardHandler.service';
 
 @Module({
   imports: [

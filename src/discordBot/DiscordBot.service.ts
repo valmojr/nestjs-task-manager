@@ -5,7 +5,7 @@ import { GuildService } from 'src/guild/guild.service';
 import { Guild, User } from '@prisma/client';
 import { randomUUID } from 'crypto';
 import { UserService } from 'src/user/user.service';
-import { DashboardHandlerService } from './DashboardHandler.service';
+import { DashboardHandlerService } from './Handlers/DashboardHandler.service';
 
 @Injectable()
 export class DiscordBotService {
@@ -132,5 +132,40 @@ export class DiscordBotService {
         dashboardChannelId: null,
       });
     }
+  }
+
+  @On('guildMemberAdd')
+  async onGuildMemberAdd(@Context() [member]: ContextOf<'guildMemberAdd'>) {
+    const guild = await this.guildService.findByDiscordId(member.guild.id);
+
+    if (!guild) {
+      throw new BadRequestException('Guild not found');
+    }
+
+    const user = await this.userService.findByDiscordId(member.user.id);
+
+    if (!user) {
+      await this.userService.create({
+        discordId: member.user.id,
+        name: member.user.username,
+        avatar: member.user.avatar,
+        guildIDs: [guild.discordId],
+        taskIDs: [],
+      });
+    } else {
+      if (user.guildIDs.includes(guild.discordId)) {
+        throw new BadRequestException('User is already on guild');
+      } else {
+        await this.userService.updateById(user.id, {
+          ...user,
+          guildIDs: [...user.guildIDs, guild.discordId],
+        });
+      }
+    }
+
+    await this.guildService.updateById(guild.id, {
+      ...guild,
+      userIDs: [...guild.userIDs, member.user.id],
+    });
   }
 }

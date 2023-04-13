@@ -1,10 +1,10 @@
 import { ModalBuilder } from 'discord.js';
 import { ActionRowBuilder, TextInputBuilder, TextInputStyle } from 'discord.js';
 
-export default (guildId: string) =>
+export default (fatherTaskId: string) =>
   new ModalBuilder()
-    .setTitle('Create Master Task')
-    .setCustomId(`CreateMasterTaskModal/${guildId}`)
+    .setTitle('Create Subtask')
+    .setCustomId(`CreateChildTaskModal/${fatherTaskId}`)
     .setComponents([
       new ActionRowBuilder<TextInputBuilder>().addComponents([
         new TextInputBuilder()
@@ -27,7 +27,7 @@ export default (guildId: string) =>
           .setCustomId('taskImage')
           .setLabel('Image URL')
           .setPlaceholder('image URL')
-          .setRequired(true)
+          .setRequired(false)
           .setStyle(TextInputStyle.Short),
       ]),
     ]);
