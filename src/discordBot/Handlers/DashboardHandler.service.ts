@@ -64,12 +64,10 @@ export class DashboardHandlerService {
     const childTasks = await this.taskService.findByFatherTaskId(task.id);
 
     const taskMessage = {
-      content: !task.fatherTaskId ? `**${task.title.toUpperCase()}**\n ` : '',
-      embeds: [EmbedTask(task, childTasks.length)],
+      content: !task.fatherTaskId ? `**${task.title.toUpperCase()}**` : '',
+      embeds: [EmbedTask(task, childTasks.length, !!task.fatherTaskId)],
       components: [],
     };
-
-    console.log(task.fatherTaskId);
 
     if (childTasks.length !== 0) {
       taskMessage.components.push(

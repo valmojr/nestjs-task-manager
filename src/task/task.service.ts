@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { Task } from '@prisma/client';
-import { randomUUID } from 'crypto';
 import { PrismaService } from 'src/Database/Database.service';
+import IdGenerator from 'src/utils/IdGenerator';
 
 @Injectable()
 export class TaskService {
@@ -20,7 +20,7 @@ export class TaskService {
           data: {
             ...task,
             level: fatherTask.level + 1,
-            id: randomUUID(),
+            id: IdGenerator(),
           },
         });
       } else {
@@ -37,7 +37,7 @@ export class TaskService {
         data: {
           ...task,
           level: 0,
-          id: randomUUID(),
+          id: IdGenerator(),
         },
       });
     }

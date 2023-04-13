@@ -1,6 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Reminder, Task } from '@prisma/client';
-import { randomUUID } from 'crypto';
 import { ComponentParam, Ctx, Modal, ModalContext } from 'necord';
 import { GuildService } from 'src/guild/guild.service';
 import { ReminderService } from 'src/reminder/reminder.service';
@@ -11,6 +10,8 @@ import _ButtonRow from '../utils/Buttons/_ButtonRow';
 import CompleteTaskButton from '../utils/Buttons/CompleteTask.button';
 import AssignTaskToMeButton from '../utils/Buttons/AssignTaskToMe.button';
 import DeleteTaskButton from '../utils/Buttons/DeleteTask.button';
+import IdGenerator from 'src/utils/IdGenerator';
+import CreateChildTaskButton from '../utils/Buttons/CreateChildTask.button';
 
 @Injectable()
 export class ModalHandlersService {
@@ -79,7 +80,7 @@ export class ModalHandlersService {
     const frequency = `${seconds} ${minuntes} ${hours} ${daysOfMonth} ${months} *`;
 
     const reminder: Reminder = await this.reminderService.create({
-      id: randomUUID(),
+      id: IdGenerator(),
       title: `Dashboard update for guild ${guildId}`,
       recurring: frequency,
       guildId: guild.id,
@@ -110,7 +111,7 @@ export class ModalHandlersService {
     }
 
     const task: Task = await this.taskService.create({
-      id: randomUUID(),
+      id: IdGenerator(),
       title,
       description,
       image,
@@ -122,10 +123,12 @@ export class ModalHandlersService {
     });
 
     return await interaction.reply({
-      embeds: [EmbedTask(task, 0)],
+      content: `Task **${task.title}** created successfully!`,
+      embeds: [EmbedTask(task, 0, false)],
       components: [
         _ButtonRow([
           CompleteTaskButton(task.id),
+          CreateChildTaskButton(task.id),
           AssignTaskToMeButton(task.id),
           DeleteTaskButton(guild.id),
         ]),
@@ -138,12 +141,9 @@ export class ModalHandlersService {
     @Ctx() [interaction]: ModalContext,
     @ComponentParam('fatherTaskId') fatherTaskId: string,
   ) {
-    const brotherTasksCount = (
-      await this.taskService.findByFatherTaskId(fatherTaskId)
-    ).length;
+    console.log(fatherTaskId);
 
     const guild = await this.guildService.findByDiscordId(interaction.guild.id);
-
     const title = interaction.fields.getTextInputValue('taskTitle');
     let description = interaction.fields.getTextInputValue('taskDescription');
     let image = interaction.fields.getTextInputValue('taskImage');
@@ -157,9 +157,9 @@ export class ModalHandlersService {
     if (image.length === 0) {
       image = null;
     }
-    console.log('fatherTaskId - ' + fatherTaskId);
+
     const task: Task = await this.taskService.create({
-      id: randomUUID(),
+      id: IdGenerator(),
       title,
       description,
       image,
@@ -169,9 +169,9 @@ export class ModalHandlersService {
       userIDs: [],
       guildId: guild.id,
     });
-
+    console.log(task);
     return await interaction.reply({
-      embeds: [EmbedTask(task, 0)],
+      embeds: [EmbedTask(task, 0, true)],
     });
   }
 }

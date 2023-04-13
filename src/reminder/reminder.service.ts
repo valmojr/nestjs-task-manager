@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Reminder } from '@prisma/client';
-import { randomUUID } from 'crypto';
 import { PrismaService } from 'src/Database/Database.service';
+import IdGenerator from 'src/utils/IdGenerator';
 
 @Injectable()
 export class ReminderService {
@@ -16,7 +16,7 @@ export class ReminderService {
     return this.prismaService.reminder.create({
       data: {
         ...data,
-        id: randomUUID(),
+        id: IdGenerator(),
       },
     });
   }

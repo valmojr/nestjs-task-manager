@@ -1,13 +1,14 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Guild } from '@prisma/client';
 import { PrismaService } from 'src/Database/Database.service';
+import IdGenerator from 'src/utils/IdGenerator';
 
 @Injectable()
 export class GuildService {
   constructor(private readonly prismaService: PrismaService) {}
   private readonly logger: Logger = new Logger(GuildService.name);
 
-  async create(data: Guild): Promise<Guild> {
+  async create(data: Omit<Guild, 'id'>): Promise<Guild> {
     this.logger.log(`Creating guild with data: ${JSON.stringify(data)}`);
 
     // check if guild already exists
@@ -17,7 +18,7 @@ export class GuildService {
     }
 
     return this.prismaService.guild.create({
-      data,
+      data: { ...data, id: IdGenerator() },
     });
   }
 

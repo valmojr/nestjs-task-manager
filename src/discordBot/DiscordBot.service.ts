@@ -3,7 +3,6 @@ import { Once, Context, ContextOf, On } from 'necord';
 import * as dotenv from 'dotenv';
 import { GuildService } from 'src/guild/guild.service';
 import { Guild, User } from '@prisma/client';
-import { randomUUID } from 'crypto';
 import { UserService } from 'src/user/user.service';
 import { DashboardHandlerService } from './Handlers/DashboardHandler.service';
 
@@ -85,7 +84,6 @@ export class DiscordBotService {
       avatar: joinedGuild.iconURL(),
       dashboardChannelId: null,
       userIDs: users.map((user) => user.discordId),
-      id: randomUUID(),
     });
   }
 

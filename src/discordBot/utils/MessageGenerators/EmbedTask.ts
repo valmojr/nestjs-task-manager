@@ -2,10 +2,12 @@ import { Task } from '@prisma/client';
 import { EmbedBuilder } from 'discord.js';
 import setColor from './setColor';
 
-export default (task: Task, childTasks: number) => {
-  const embedTask = new EmbedBuilder()
-    .setTitle(task.title)
-    .setDescription(task.description);
+export default (task: Task, childTasks: number, showTitle: boolean) => {
+  const embedTask = new EmbedBuilder().setDescription(task.description);
+
+  if (showTitle) {
+    embedTask.setTitle(task.title);
+  }
 
   if (childTasks > 0) {
     embedTask.addFields([

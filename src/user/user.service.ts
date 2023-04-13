@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { User } from '@prisma/client';
-import { randomUUID } from 'crypto';
 import { PrismaService } from 'src/Database/Database.service';
+import IdGenerator from 'src/utils/IdGenerator';
 
 @Injectable()
 export class UserService {
@@ -28,7 +28,7 @@ export class UserService {
       return this.prismaService.user.create({
         data: {
           ...data,
-          id: randomUUID(),
+          id: IdGenerator(),
         },
       });
     }
@@ -53,7 +53,7 @@ export class UserService {
       return this.prismaService.user.create({
         data: {
           ...data,
-          id: randomUUID(),
+          id: IdGenerator(),
         },
       });
     }
