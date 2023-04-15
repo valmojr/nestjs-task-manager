@@ -82,6 +82,8 @@ export class DiscordBotService {
       discordId: joinedGuild.id,
       name: joinedGuild.name,
       avatar: joinedGuild.iconURL(),
+      requiredRole: null,
+      maxTaskLevel: null,
       dashboardChannelId: null,
       userIDs: users.map((user) => user.discordId),
     });

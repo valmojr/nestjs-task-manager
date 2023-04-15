@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { Button, ButtonContext, ComponentParam, Ctx } from 'necord';
+import { Button, ButtonContext, Ctx, ComponentParam } from 'necord';
 import { GuildService } from 'src/guild/guild.service';
 import { ReminderService } from 'src/reminder/reminder.service';
 import { TaskService } from 'src/task/task.service';
@@ -7,6 +7,7 @@ import { UserService } from 'src/user/user.service';
 import { ChannelType } from 'discord-api-types/v9';
 import CreateMasterTaskModal from '../utils/Modal/CreateMasterTask.modal';
 import CreateChildTaskModal from '../utils/Modal/CreateChildTask.modal';
+import CustomizeBotModal from '../utils/Modal/CustomizeBot.modal';
 
 @Injectable()
 export class MessageComponentHandlersService {
@@ -36,6 +37,8 @@ export class MessageComponentHandlersService {
         name: 'dashboard',
         type: ChannelType.GuildText,
       });
+
+      interaction.showModal(CustomizeBotModal(interaction.guild.id));
 
       const guild = await this.guildService.setDashboardChannel(
         guildOnDatabase.id,

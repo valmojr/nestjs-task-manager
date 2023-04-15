@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Reminder, Task } from '@prisma/client';
-import { ComponentParam, Ctx, Modal, ModalContext } from 'necord';
+import { ComponentParam, Ctx, Modal, ModalContext, ModalParam } from 'necord';
 import { GuildService } from 'src/guild/guild.service';
 import { ReminderService } from 'src/reminder/reminder.service';
 import { TaskService } from 'src/task/task.service';
@@ -139,23 +139,30 @@ export class ModalHandlersService {
   @Modal(`CreateChildTaskModal/:fatherTaskId`)
   async createChildTaskModal(
     @Ctx() [interaction]: ModalContext,
-    @ComponentParam('fatherTaskId') fatherTaskId: string,
+    @ModalParam('fatherTaskId') fatherTaskId: string,
   ) {
-    console.log(fatherTaskId);
-
     const guild = await this.guildService.findByDiscordId(interaction.guild.id);
     const title = interaction.fields.getTextInputValue('taskTitle');
-    let description = interaction.fields.getTextInputValue('taskDescription');
-    let image = interaction.fields.getTextInputValue('taskImage');
+    const description = interaction.fields.getTextInputValue('taskDescription');
+    const image = interaction.fields.getTextInputValue('taskImage');
 
-    if (title.length === 0) {
-      throw new Error('Task title cannot be empty');
+    const fatherTask = await this.taskService.findById(fatherTaskId);
+
+    if (title.length < 3) {
+      return await interaction.reply({
+        content: 'The title must be at least 3 characters long.',
+        ephemeral: true,
+      });
     }
-    if (description.length === 0) {
-      description = 'No description provided';
-    }
-    if (image.length === 0) {
-      image = null;
+
+    if (image && !image.startsWith('http')) {
+      this.logger.error(
+        `${interaction.user.username} tried to create a task with an invalid image url in guild ${guild.name}`,
+      );
+      return await interaction.reply({
+        content: 'The image must be a valid url.',
+        ephemeral: true,
+      });
     }
 
     const task: Task = await this.taskService.create({
@@ -163,13 +170,13 @@ export class ModalHandlersService {
       title,
       description,
       image,
-      level: 0,
+      level: fatherTask.level + 1,
       status: 0,
-      fatherTaskId,
+      fatherTaskId: fatherTask.id,
       userIDs: [],
       guildId: guild.id,
     });
-    console.log(task);
+
     return await interaction.reply({
       embeds: [EmbedTask(task, 0, true)],
     });

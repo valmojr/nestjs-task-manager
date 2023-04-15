@@ -13,6 +13,8 @@ model Guild {
   name               String?
   avatar             String?
   dashboardChannelId String?    @unique
+  requiredRole       String?
+  maxTaskLevel       Int?
   userIDs            String[]
   users              User[]     @relation(fields: [userIDs], references: [id])
   tasks              Task[]

@@ -8,10 +8,9 @@ import { TaskService } from 'src/task/task.service';
 import { ReminderService } from 'src/reminder/reminder.service';
 import { UserService } from 'src/user/user.service';
 import { GuildService } from 'src/guild/guild.service';
-import { GenerateDashboardCommandService } from './commands/generateDashboard.command.service';
+import { GenerateDashboardCommandService } from './commands/configure.command.service';
 import { MessageComponentHandlersService } from './Handlers/MessageComponentsHandlers.service';
 import { ModalHandlersService } from './Handlers/ModalHandlers.service';
-import { CustomizeBotCommandService } from './commands/customizeBot.command.service';
 import { SetDashboardUpdateFrequencyService } from './commands/setDashboardUpdateFrequency.service';
 import { DashboardHandlerService } from './Handlers/DashboardHandler.service';
 
@@ -32,7 +31,6 @@ import { DashboardHandlerService } from './Handlers/DashboardHandler.service';
     MessageComponentHandlersService,
     DashboardHandlerService,
     ModalHandlersService,
-    CustomizeBotCommandService,
     GenerateDashboardCommandService,
     SetDashboardUpdateFrequencyService,
   ],

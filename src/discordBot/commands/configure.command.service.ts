@@ -7,8 +7,8 @@ import _ButtonRow from 'src/discordBot/utils/Buttons/_ButtonRow';
 @Injectable()
 export class GenerateDashboardCommandService {
   @SlashCommand({
-    name: 'generate-dashboard',
-    description: 'Generate a dashboard for your server',
+    name: 'configure',
+    description: 'Configure the dashboard for handling tasks in your server.',
   })
   async generateDashboard(@Context() [interaction]: SlashCommandContext) {
     return interaction.reply({
