@@ -142,6 +142,7 @@ export class ModalHandlersService {
     @ModalParam('fatherTaskId') fatherTaskId: string,
   ) {
     const guild = await this.guildService.findByDiscordId(interaction.guild.id);
+
     const title = interaction.fields.getTextInputValue('taskTitle');
     const description = interaction.fields.getTextInputValue('taskDescription');
     const image = interaction.fields.getTextInputValue('taskImage');
@@ -164,6 +165,8 @@ export class ModalHandlersService {
         ephemeral: true,
       });
     }
+
+    console.log(fatherTask);
 
     const task: Task = await this.taskService.create({
       id: IdGenerator(),

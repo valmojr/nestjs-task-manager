@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { Reminder, Task } from '@prisma/client';
 import { GuildService } from 'src/guild/guild.service';
 import { ReminderService } from 'src/reminder/reminder.service';
@@ -24,6 +24,8 @@ export class DashboardHandlerService {
     private readonly reminderService: ReminderService,
     private readonly userService: UserService,
   ) {}
+
+  private logger = new Logger(DashboardHandlerService.name);
 
   async run(client: Client<true>) {
     const reminders = await this.reminderService.findAll();
@@ -52,9 +54,17 @@ export class DashboardHandlerService {
             components: [_ButtonRow([CreateMasterTask(guildOnDatabase.id)])],
           });
 
-          guildMasterTasks.forEach(async (masterTask) => {
+          for (const masterTask of guildMasterTasks) {
             await channel.send(await this.generateTaskMessage(masterTask));
-          });
+          }
+        } else {
+          this.logger.error(
+            `Dashboard channel not found for guild ${guildOnDatabase.name} (${guildOnDatabase.id})`,
+          );
+
+          throw new Error(
+            `Dashboard channel not found for guild ${guildOnDatabase.name} (${guildOnDatabase.id})`,
+          );
         }
       });
     });
@@ -63,13 +73,15 @@ export class DashboardHandlerService {
   async generateTaskMessage(task: Task) {
     const childTasks = await this.taskService.findByFatherTaskId(task.id);
 
+    const needTitle = task.fatherTaskId ? false : true;
+
     const taskMessage = {
       content: !task.fatherTaskId ? `**${task.title.toUpperCase()}**` : '',
-      embeds: [EmbedTask(task, childTasks.length, !!task.fatherTaskId)],
+      embeds: [EmbedTask(task, childTasks.length, needTitle)],
       components: [],
     };
 
-    if (childTasks.length !== 0) {
+    if (!!childTasks.length) {
       taskMessage.components.push(
         _ButtonRow([
           CreateChildTaskButton(task.id),

@@ -3,6 +3,6 @@ import { ButtonBuilder, ButtonStyle } from 'discord.js';
 export default (taskId: string) =>
   new ButtonBuilder()
     .setCustomId(`CreateChildTaskButton/${taskId}`)
-    .setLabel('Create Child Task')
+    .setLabel('Create Subtask')
     .setEmoji('📝')
-    .setStyle(ButtonStyle.Primary);
+    .setStyle(ButtonStyle.Success);
